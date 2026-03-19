@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midnight Palette 🌙🎨</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@100;300;400&display=swap');
+
+  :root{
+    --bg:#000;--fg:rgba(255,255,255,.85);--fg-dim:rgba(255,255,255,.35);
+    --accent:#7b6ba5;--accent2:#c4788d;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--fg);
+    font-family:'Cormorant Garamond','Noto Sans JP',serif;
+    overflow-x:hidden;min-height:100vh;
+    cursor:default;
+  }
+
+  /* ─── Splash / Landing ─── */
+  #splash{
+    position:fixed;inset:0;z-index:9999;background:#000;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity 1.2s ease,visibility 1.2s ease;
+  }
+  #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+  #splash h1{
+    font-size:clamp(2rem,6vw,4.5rem);font-weight:300;letter-spacing:.25em;
+    background:linear-gradient(135deg,#7b6ba5,#c4788d,#e8b4b8);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:fadeUp 2s ease both;
+  }
+  #splash p{
+    margin-top:1.2rem;font-size:.9rem;color:var(--fg-dim);letter-spacing:.15em;
+    animation:fadeUp 2s .6s ease both;font-style:italic;
+  }
+  #splash .enter-btn{
+    margin-top:3rem;padding:.7rem 2.5rem;
+    border:1px solid rgba(255,255,255,.2);border-radius:999px;
+    background:transparent;color:var(--fg);font-family:inherit;font-size:.85rem;
+    letter-spacing:.2em;cursor:pointer;
+    animation:fadeUp 2s 1.2s ease both;
+    transition:border-color .4s,background .4s;
+  }
+  #splash .enter-btn:hover{border-color:var(--accent);background:rgba(123,107,165,.12)}
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* ─── Hidden Nav ─── */
+  #nav-toggle{
+    position:fixed;top:1.5rem;right:1.5rem;z-index:1000;
+    width:28px;height:28px;cursor:pointer;display:flex;flex-direction:column;
+    justify-content:center;gap:5px;
+  }
+  #nav-toggle span{
+    display:block;width:100%;height:1px;background:var(--fg-dim);
+    transition:transform .35s,opacity .35s;
+  }
+  #nav-toggle.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+  #nav-toggle.open span:nth-child(2){opacity:0}
+  #nav-toggle.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+
+  #sidebar{
+    position:fixed;top:0;right:-320px;width:310px;height:100vh;z-index:999;
+    background:rgba(10,10,15,.96);backdrop-filter:blur(20px);
+    border-left:1px solid rgba(255,255,255,.06);
+    padding:5rem 2rem 2rem;transition:right .45s cubic-bezier(.4,0,.2,1);
+    overflow-y:auto;
+  }
+  #sidebar.open{right:0}
+  #sidebar h3{font-size:.7rem;letter-spacing:.3em;color:var(--fg-dim);text-transform:uppercase;margin-bottom:1rem}
+  #sidebar label{display:block;font-size:.8rem;color:var(--fg-dim);margin-bottom:.4rem;letter-spacing:.05em}
+  #sidebar input[type="text"],#sidebar textarea{
+    width:100%;padding:.5rem .7rem;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    border-radius:6px;color:var(--fg);font-family:inherit;font-size:.82rem;
+    margin-bottom:1rem;outline:none;transition:border-color .3s;
+  }
+  #sidebar input[type="text"]:focus,#sidebar textarea:focus{border-color:var(--accent)}
+  #sidebar textarea{resize:vertical;min-height:60px}
+
+  .file-drop{
+    position:relative;
+    width:100%;padding:1.2rem;margin-bottom:1rem;
+    border:1px dashed rgba(255,255,255,.12);border-radius:8px;
+    text-align:center;font-size:.75rem;color:var(--fg-dim);
+    cursor:pointer;transition:border-color .3s,background .3s;
+  }
+  .file-drop:hover,.file-drop.dragover{border-color:var(--accent);background:rgba(123,107,165,.06)}
+  .file-drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .file-drop .file-name{margin-top:.4rem;font-size:.7rem;color:var(--accent2);word-break:break-all}
+
+  .add-btn{
+    width:100%;padding:.65rem;margin-top:.5rem;
+    background:linear-gradient(135deg,rgba(123,107,165,.25),rgba(196,120,141,.25));
+    border:1px solid rgba(255,255,255,.08);border-radius:8px;
+    color:var(--fg);font-family:inherit;font-size:.8rem;letter-spacing:.12em;
+    cursor:pointer;transition:all .35s;
+  }
+  .add-btn:hover{background:linear-gradient(135deg,rgba(123,107,165,.4),rgba(196,120,141,.4));border-color:rgba(255,255,255,.15)}
+  .add-btn:disabled{opacity:.35;cursor:not-allowed}
+
+  .piece-list{margin-top:1.5rem}
+  .piece-item{
+    display:flex;align-items:center;gap:.6rem;
+    padding:.5rem .6rem;margin-bottom:.5rem;
+    background:rgba(255,255,255,.03);border-radius:6px;
+    font-size:.75rem;cursor:pointer;transition:background .3s;
+  }
+  .piece-item:hover{background:rgba(255,255,255,.07)}
+  .piece-item .thumb{width:32px;height:32px;border-radius:4px;object-fit:cover;flex-shrink:0}
+  .piece-item .info{flex:1;overflow:hidden}
+  .piece-item .info span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .piece-item .info .title{color:var(--fg)}
+  .piece-item .info .sub{color:var(--fg-dim);font-size:.65rem}
+  .piece-item .del{
+    width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+    border-radius:50%;font-size:.65rem;color:var(--fg-dim);
+    transition:color .3s,background .3s;flex-shrink:0;
+  }
+  .piece-item .del:hover{color:#e55;background:rgba(238,85,85,.1)}
+
+  /* ─── Canvas / Waveform BG ─── */
+  #wave-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+  /* ─── Gallery ─── */
+  #gallery{position:relative;z-index:1}
+  .gallery-zone{
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:4rem 2rem;position:relative;
+  }
+  .artwork-frame{
+    position:relative;max-width:min(80vw,600px);
+    animation:artFade 1.2s ease both;
+  }
+  .artwork-frame img{
+    width:100%;height:auto;max-height:65vh;object-fit:contain;
+    border-radius:2px;
+    box-shadow:0 0 80px rgba(123,107,165,.15),0 0 200px rgba(196,120,141,.08);
+    transition:box-shadow .5s;
+  }
+  .artwork-frame:hover img{
+    box-shadow:0 0 100px rgba(123,107,165,.25),0 0 250px rgba(196,120,141,.15);
+  }
+  .artwork-title{
+    margin-top:1.5rem;text-align:center;font-size:clamp(.85rem,2vw,1.1rem);
+    font-weight:300;letter-spacing:.15em;color:var(--fg);opacity:.8;
+  }
+  .artwork-artist{
+    text-align:center;font-size:.7rem;letter-spacing:.2em;
+    color:var(--fg-dim);margin-top:.35rem;font-style:italic;
+  }
+
+  @keyframes artFade{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+
+  /* ─── Secret Message ─── */
+  .secret-trigger{
+    position:absolute;width:40px;height:40px;cursor:pointer;
+    border-radius:50%;z-index:5;
+  }
+  .secret-overlay{
+    position:fixed;inset:0;z-index:8000;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.85);backdrop-filter:blur(12px);
+    opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s;
+  }
+  .secret-overlay.show{opacity:1;visibility:visible}
+  .secret-overlay .msg{
+    max-width:420px;text-align:center;padding:2rem;
+    font-size:clamp(1rem,3vw,1.4rem);font-weight:300;
+    line-height:2;letter-spacing:.08em;
+    background:linear-gradient(135deg,#7b6ba5,#c4788d);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:msgPop .8s ease both;
+  }
+  @keyframes msgPop{from{opacity:0;transform:translateY(15px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .secret-overlay .close-hint{
+    position:absolute;bottom:2rem;font-size:.65rem;color:var(--fg-dim);letter-spacing:.15em;
+  }
+
+  /* ─── Player Bar ─── */
+  #player-bar{
+    position:fixed;bottom:0;left:0;right:0;z-index:900;
+    background:rgba(5,5,10,.92);backdrop-filter:blur(18px);
+    border-top:1px solid rgba(255,255,255,.04);
+    padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;
+    transform:translateY(100%);transition:transform .5s cubic-bezier(.4,0,.2,1);
+  }
+  #player-bar.show{transform:translateY(0)}
+  #player-bar .now-thumb{width:36px;height:36px;border-radius:3px;object-fit:cover}
+  #player-bar .now-info{flex:1;min-width:0}
+  #player-bar .now-info .now-title{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #player-bar .now-info .now-sub{font-size:.6rem;color:var(--fg-dim)}
+  .play-btn{
+    width:36px;height:36px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.15);background:transparent;
+    color:var(--fg);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:border-color .3s,background .3s;flex-shrink:0;
+  }
+  .play-btn:hover{border-color:var(--accent);background:rgba(123,107,165,.1)}
+  #seek-bar{
+    flex:1;max-width:200px;height:2px;
+    -webkit-appearance:none;appearance:none;
+    background:rgba(255,255,255,.1);border-radius:2px;cursor:pointer;
+  }
+  #seek-bar::-webkit-slider-thumb{
+    -webkit-appearance:none;width:8px;height:8px;border-radius:50%;
+    background:var(--accent2);cursor:pointer;
+  }
+  #time-display{font-size:.6rem;color:var(--fg-dim);min-width:55px;text-align:right}
+
+  /* ─── Empty State ─── */
+  #empty-state{
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:2rem;
+  }
+  #empty-state .icon{font-size:3rem;margin-bottom:1.5rem;opacity:.2}
+  #empty-state p{font-size:.85rem;color:var(--fg-dim);line-height:1.8;letter-spacing:.05em}
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+
+  /* ─── Responsive ─── */
+  @media(max-width:600px){
+    #sidebar{width:100%;right:-100%}
+    .artwork-frame{max-width:92vw}
+    #player-bar{padding:.5rem 1rem;gap:.6rem}
+    #seek-bar{max-width:120px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════ Splash Screen ═══════ -->
+<div id="splash">
+  <h1>Midnight Palette</h1>
+  <p>where sound meets color</p>
+  <button class="enter-btn" id="enter-btn">Enter the Gallery</button>
+</div>
+
+<!-- ═══════ Hamburger Nav ═══════ -->
+<div id="nav-toggle">
+  <span></span><span></span><span></span>
+</div>
+
+<!-- ═══════ Sidebar / Upload Panel ═══════ -->
+<div id="sidebar">
+  <h3>Add a New Piece</h3>
+
+  <label>Title</label>
+  <input type="text" id="inp-title" placeholder="作品のタイトル">
+
+  <label>Artwork (image)</label>
+  <div class="file-drop" id="drop-image">
+    りぴの絵をドラッグ or クリック
+    <input type="file" accept="image/*" id="inp-image">
+    <div class="file-name" id="fname-image"></div>
+  </div>
+
+  <label>Music (audio)</label>
+  <div class="file-drop" id="drop-audio">
+    ももの曲をドラッグ or クリック
+    <input type="file" accept="audio/*" id="inp-audio">
+    <div class="file-name" id="fname-audio"></div>
+  </div>
+
+  <label>Secret Message 💌</label>
+  <textarea id="inp-secret" placeholder="ふたりだけの秘密のメッセージ…"></textarea>
+
+  <button class="add-btn" id="btn-add" disabled>✦ ギャラリーに追加 ✦</button>
+
+  <div class="piece-list" id="piece-list">
+    <h3 style="margin-top:1.5rem">Gallery Pieces</h3>
+  </div>
+</div>
+
+<!-- ═══════ Waveform Canvas ═══════ -->
+<canvas id="wave-canvas"></canvas>
+
+<!-- ═══════ Gallery ═══════ -->
+<div id="gallery">
+  <div id="empty-state">
+    <div class="icon">🌙</div>
+    <p>まだ作品がありません<br>右上のメニューから<br>ふたりの作品を追加してね</p>
+  </div>
+</div>
+
+<!-- ═══════ Player Bar ═══════ -->
+<div id="player-bar">
+  <img class="now-thumb" id="now-thumb" src="" alt="">
+  <div class="now-info">
+    <div class="now-title" id="now-title">—</div>
+    <div class="now-sub" id="now-sub"></div>
+  </div>
+  <button class="play-btn" id="btn-play">▶</button>
+  <input type="range" id="seek-bar" min="0" max="100" value="0">
+  <div id="time-display">0:00 / 0:00</div>
+</div>
+
+<!-- ═══════ Secret Message Overlay ═══════ -->
+<div class="secret-overlay" id="secret-overlay">
+  <div class="msg" id="secret-msg"></div>
+  <div class="close-hint">tap anywhere to close</div>
+</div>
+
+<script>
+// ─────────────────────────────────────
+//  Midnight Palette – Main Application
+// ─────────────────────────────────────
+(() => {
+  'use strict';
+
+  // ── State ──
+  let pieces = [];          // { id, title, imageURL, audioURL, colors, secret }
+  let currentIndex = -1;
+  let isPlaying = false;
+
+  // ── DOM refs ──
+  const $ = s => document.querySelector(s);
+  const splash     = $('#splash');
+  const enterBtn   = $('#enter-btn');
+  const navToggle  = $('#nav-toggle');
+  const sidebar    = $('#sidebar');
+  const gallery    = $('#gallery');
+  const emptyState = $('#empty-state');
+  const canvas     = $('#wave-canvas');
+  const ctx        = canvas.getContext('2d');
+  const playerBar  = $('#player-bar');
+  const btnPlay    = $('#btn-play');
+  const seekBar    = $('#seek-bar');
+  const timeDisp   = $('#time-display');
+  const secretOv   = $('#secret-overlay');
+  const secretMsg  = $('#secret-msg');
+
+  // Upload inputs
+  const inpTitle  = $('#inp-title');
+  const inpImage  = $('#inp-image');
+  const inpAudio  = $('#inp-audio');
+  const inpSecret = $('#inp-secret');
+  const btnAdd    = $('#btn-add');
+  const fnameImg  = $('#fname-image');
+  const fnameAud  = $('#fname-audio');
+
+  // ── Audio Context ──
+  let audioCtx, analyser, sourceNode, dataArray;
+  const audio = new Audio();
+  audio.crossOrigin = 'anonymous';
+
+  // ── Splash ──
+  enterBtn.addEventListener('click', () => {
+    splash.classList.add('hide');
+    initAudioContext();
+  });
+
+  function initAudioContext() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    sourceNode = audioCtx.createMediaElementSource(audio);
+    sourceNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
+  }
+
+  // ── Sidebar Toggle ──
+  navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    sidebar.classList.toggle('open');
+  });
+
+  // ── File Drops ──
+  let selectedImage = null, selectedAudio = null;
+
+  function setupDrop(dropEl, inputEl, fnameEl, type) {
+    ['dragenter','dragover'].forEach(e => dropEl.addEventListener(e, ev => { ev.preventDefault(); dropEl.classList.add('dragover'); }));
+    ['dragleave','drop'].forEach(e => dropEl.addEventListener(e, () => dropEl.classList.remove('dragover')));
+    dropEl.addEventListener('drop', ev => {
+      ev.preventDefault();
+      const f = ev.dataTransfer.files[0];
+      if (f) handleFile(f, fnameEl, type);
+    });
+    inputEl.addEventListener('change', () => {
+      if (inputEl.files[0]) handleFile(inputEl.files[0], fnameEl, type);
+    });
+  }
+  function handleFile(file, fnameEl, type) {
+    fnameEl.textContent = file.name;
+    const url = URL.createObjectURL(file);
+    if (type === 'image') selectedImage = url;
+    else selectedAudio = url;
+    validateForm();
+  }
+  setupDrop($('#drop-image'), inpImage, fnameImg, 'image');
+  setupDrop($('#drop-audio'), inpAudio, fnameAud, 'audio');
+
+  inpTitle.addEventListener('input', validateForm);
+  function validateForm() {
+    btnAdd.disabled = !(inpTitle.value.trim() && selectedImage && selectedAudio);
+  }
+
+  // ── Extract Dominant Colors ──
+  function extractColors(imgURL) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        const cx = c.getContext('2d');
+        const size = 64;
+        c.width = size; c.height = size;
+        cx.drawImage(img, 0, 0, size, size);
+        const d = cx.getImageData(0, 0, size, size).data;
+        // Simple k=3 bucketing
+        let buckets = [[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i], g = d[i+1], b = d[i+2];
+          const lum = r * 0.299 + g * 0.587 + b * 0.114;
+          const idx = lum < 85 ? 0 : lum < 170 ? 1 : 2;
+          buckets[idx][0] += r; buckets[idx][1] += g; buckets[idx][2] += b; buckets[idx][3]++;
+        }
+        const colors = buckets.map(b => {
+          if (!b[3]) return [80, 60, 120];
+          return [Math.round(b[0]/b[3]), Math.round(b[1]/b[3]), Math.round(b[2]/b[3])];
+        });
+        resolve(colors);
+      };
+      img.onerror = () => resolve([[80,60,120],[160,100,130],[200,160,180]]);
+      img.src = imgURL;
+    });
+  }
+
+  // ── Add Piece ──
+  btnAdd.addEventListener('click', async () => {
+    const title = inpTitle.value.trim();
+    const secret = inpSecret.value.trim();
+    const colors = await extractColors(selectedImage);
+    const piece = {
+      id: Date.now(),
+      title,
+      imageURL: selectedImage,
+      audioURL: selectedAudio,
+      colors,
+      secret: secret || ''
+    };
+    pieces.push(piece);
+    renderGallery();
+    renderPieceList();
+    // Reset form
+    inpTitle.value = ''; inpSecret.value = '';
+    selectedImage = null; selectedAudio = null;
+    fnameImg.textContent = ''; fnameAud.textContent = '';
+    inpImage.value = ''; inpAudio.value = '';
+    btnAdd.disabled = true;
+    // Auto-play if first piece
+    if (pieces.length === 1) playPiece(0);
+  });
+
+  // ── Render Gallery ──
+  function renderGallery() {
+    // Remove old zones
+    gallery.querySelectorAll('.gallery-zone').forEach(z => z.remove());
+    emptyState.style.display = pieces.length ? 'none' : 'flex';
+
+    pieces.forEach((p, i) => {
+      const zone = document.createElement('div');
+      zone.className = 'gallery-zone';
+      zone.dataset.index = i;
+
+      const frame = document.createElement('div');
+      frame.className = 'artwork-frame';
+
+      const img = document.createElement('img');
+      img.src = p.imageURL;
+      img.alt = p.title;
+      frame.appendChild(img);
+
+      // Secret trigger – positioned at bottom-right corner of artwork
+      if (p.secret) {
+        const trigger = document.createElement('div');
+        trigger.className = 'secret-trigger';
+        trigger.style.cssText = 'bottom:8px;right:8px;';
+        trigger.title = '';
+        trigger.addEventListener('click', e => {
+          e.stopPropagation();
+          showSecret(p.secret);
+        });
+        frame.appendChild(trigger);
+      }
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'artwork-title';
+      titleEl.textContent = p.title;
+
+      zone.appendChild(frame);
+      zone.appendChild(titleEl);
+
+      zone.addEventListener('click', () => playPiece(i));
+      gallery.appendChild(zone);
+    });
+  }
+
+  // ── Render Piece List (Sidebar) ──
+  function renderPieceList() {
+    const list = $('#piece-list');
+    list.querySelectorAll('.piece-item').forEach(el => el.remove());
+    pieces.forEach((p, i) => {
+      const item = document.createElement('div');
+      item.className = 'piece-item';
+      item.innerHTML = `
+        <img class="thumb" src="${p.imageURL}" alt="">
+        <div class="info">
+          <span class="title">${p.title}</span>
+          <span class="sub">${p.secret ? '💌 secret inside' : ''}</span>
+        </div>
+        <div class="del" data-i="${i}">✕</div>
+      `;
+      item.querySelector('.info').addEventListener('click', () => { playPiece(i); sidebar.classList.remove('open'); navToggle.classList.remove('open'); });
+      item.querySelector('.del').addEventListener('click', e => { e.stopPropagation(); removePiece(i); });
+      list.appendChild(item);
+    });
+  }
+
+  function removePiece(i) {
+    if (currentIndex === i) { audio.pause(); isPlaying = false; playerBar.classList.remove('show'); currentIndex = -1; }
+    else if (currentIndex > i) currentIndex--;
+    pieces.splice(i, 1);
+    renderGallery();
+    renderPieceList();
+  }
+
+  // ── Play Piece ──
+  function playPiece(i) {
+    if (i < 0 || i >= pieces.length) return;
+    currentIndex = i;
+    const p = pieces[i];
+    audio.src = p.audioURL;
+    audio.play().then(() => {
+      isPlaying = true;
+      btnPlay.textContent = '⏸';
+      playerBar.classList.add('show');
+      $('#now-thumb').src = p.imageURL;
+      $('#now-title').textContent = p.title;
+      $('#now-sub').textContent = `${i + 1} / ${pieces.length}`;
+      activeColors = p.colors;
+      // Scroll to zone
+      const zone = gallery.querySelectorAll('.gallery-zone')[i];
+      if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }).catch(() => {});
+  }
+
+  btnPlay.addEventListener('click', () => {
+    if (!audio.src) return;
+    if (isPlaying) { audio.pause(); isPlaying = false; btnPlay.textContent = '▶'; }
+    else { audio.play(); isPlaying = true; btnPlay.textContent = '⏸'; }
+  });
+
+  // Seek
+  seekBar.addEventListener('input', () => {
+    if (audio.duration) audio.currentTime = (seekBar.value / 100) * audio.duration;
+  });
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    seekBar.value = (audio.currentTime / audio.duration) * 100;
+    const f = t => { const m = Math.floor(t/60); const s = Math.floor(t%60); return `${m}:${s<10?'0':''}${s}`; };
+    timeDisp.textContent = `${f(audio.currentTime)} / ${f(audio.duration)}`;
+  });
+  // Auto next
+  audio.addEventListener('ended', () => {
+    if (currentIndex < pieces.length - 1) playPiece(currentIndex + 1);
+    else { isPlaying = false; btnPlay.textContent = '▶'; }
+  });
+
+  // ── Secret Message ──
+  function showSecret(msg) {
+    secretMsg.textContent = msg;
+    secretOv.classList.add('show');
+  }
+  secretOv.addEventListener('click', () => secretOv.classList.remove('show'));
+
+  // ── Waveform + Gradient Canvas ──
+  let activeColors = [[80,60,120],[160,100,130],[200,160,180]];
+  let smoothData = new Float32Array(256);
+  let phase = 0;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function drawWave() {
+    requestAnimationFrame(drawWave);
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Get audio data
+    let energy = 0;
+    if (analyser && isPlaying) {
+      analyser.getByteTimeDomainData(dataArray);
+      for (let i = 0; i < dataArray.length; i++) {
+        smoothData[i] += (((dataArray[i] - 128) / 128) - smoothData[i]) * 0.15;
+        energy += Math.abs(smoothData[i]);
+      }
+      energy /= dataArray.length;
+    } else {
+      for (let i = 0; i < smoothData.length; i++) smoothData[i] *= 0.95;
+      energy = 0.02;
+    }
+
+    phase += 0.003 + energy * 0.01;
+    const c = activeColors;
+
+    // Draw 3 gradient wave layers
+    for (let layer = 0; layer < 3; layer++) {
+      const [r, g, b] = c[layer] || [80, 60, 120];
+      const alpha = 0.08 + energy * 0.15;
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      for (let x = 0; x <= W; x += 3) {
+        const t = x / W;
+        const dataI = Math.floor(t * (smoothData.length - 1));
+        const waveH = smoothData[dataI] || 0;
+        const baseY = H * (0.35 + layer * 0.15);
+        const y = baseY
+          + Math.sin(t * Math.PI * 2 + phase + layer * 1.2) * (30 + energy * 80)
+          + waveH * (60 + energy * 120)
+          + Math.sin(t * Math.PI * 4 + phase * 0.7 + layer) * 15;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.fill();
+    }
+
+    // Subtle radial glow in center
+    const grd = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W * 0.5);
+    const gc = c[1] || [160,100,130];
+    grd.addColorStop(0, `rgba(${gc[0]},${gc[1]},${gc[2]},${0.04 + energy * 0.06})`);
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+  }
+  drawWave();
+
+  // ── Intersection Observer – auto-switch piece on scroll ──
+  const observerOpts = { threshold: 0.55 };
+  const zoneObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const i = parseInt(entry.target.dataset.index);
+        if (i !== currentIndex && pieces[i]) {
+          playPiece(i);
+        }
+      }
+    });
+  }, observerOpts);
+
+  // Re-observe after gallery render
+  const origRender = renderGallery;
+  const _renderGallery = renderGallery;
+  // Patch renderGallery to attach observer
+  const origRenderGallery = renderGallery;
+
+  // We'll use a MutationObserver instead
+  new MutationObserver(() => {
+    gallery.querySelectorAll('.gallery-zone').forEach(z => zoneObserver.observe(z));
+  }).observe(gallery, { childList: true });
+
+})();
+</script>
+</body>
+</html>

@@ -852,6 +852,8 @@
   let viewMode = 'museum';
   let repeatMode = 0;   // 0: no repeat, 1: repeat all, 2: repeat one
   let shuffleOn = false;
+  let shuffledOrder = [];   // shuffled indices for album display order
+  let isShuffleJumping = false; // guard for museum auto-scroll loop
 
   /* ── DOM ── */
   const $ = s => document.querySelector(s);
@@ -1025,6 +1027,7 @@
         message: rec.message || rec.secret || ''
       });
     }
+    buildShuffledOrder();
     renderMuseum(); renderAlbum(); renderPieceList();
     viewToggle.classList.toggle('show', pieces.length > 0);
   }
@@ -1096,26 +1099,37 @@
   }
 
   /* ── Render Album ── */
+  function buildShuffledOrder() {
+    shuffledOrder = pieces.map((_, i) => i);
+    for (let k = shuffledOrder.length - 1; k > 0; k--) {
+      const j = Math.floor(Math.random() * (k + 1));
+      [shuffledOrder[k], shuffledOrder[j]] = [shuffledOrder[j], shuffledOrder[k]];
+    }
+  }
+
   function renderAlbum() {
     albumBookshelf.innerHTML = '';
     const perShelf = Math.max(6, Math.min(11, Math.floor(window.innerWidth / 65)));
 
-    for (let s = 0; s < pieces.length; s += perShelf) {
+    // Use shuffled order when shuffle is on
+    const displayOrder = shuffleOn ? shuffledOrder : pieces.map((_, i) => i);
+
+    for (let s = 0; s < displayOrder.length; s += perShelf) {
       const shelf = document.createElement('div');
       shelf.className = 'bookshelf';
 
       const row = document.createElement('div');
       row.className = 'bookshelf-row';
 
-      const chunk = pieces.slice(s, s + perShelf);
+      const chunk = displayOrder.slice(s, s + perShelf);
       const totalInRow = chunk.length;
 
       const isFirstShelf = (s === 0);
-      chunk.forEach((p, j) => {
-        const i = s + j;
+      chunk.forEach((pieceIdx, j) => {
+        const p = pieces[pieceIdx];
         const spine = document.createElement('div');
         spine.className = 'book-spine';
-        spine.dataset.index = i;
+        spine.dataset.index = pieceIdx;
 
         // Vary height slightly for realism
         const hVar = 0.92 + Math.random() * 0.08;
@@ -1126,7 +1140,7 @@
           <div class="spine-bg"><img src="${p.imageURL}" alt="" loading="lazy"></div>
           <div class="spine-overlay"></div>
           <div class="spine-title">${escHTML(p.title)}</div>
-          <div class="spine-num">${String(i + 1).padStart(2, '0')}</div>
+          <div class="spine-num">${String(pieceIdx + 1).padStart(2, '0')}</div>
           <div class="spine-band-top"></div>
           <div class="spine-band-btm"></div>
           <div class="spine-preview${previewCls}">
@@ -1135,7 +1149,7 @@
           </div>
         `;
 
-        spine.addEventListener('click', () => playPiece(i));
+        spine.addEventListener('click', () => playPiece(pieceIdx));
         row.appendChild(spine);
       });
 
@@ -1151,8 +1165,8 @@
   }
 
   function highlightAlbumPlaying() {
-    albumBookshelf.querySelectorAll('.book-spine').forEach((s, i) => {
-      s.classList.toggle('playing', i === currentIndex);
+    albumBookshelf.querySelectorAll('.book-spine').forEach(s => {
+      s.classList.toggle('playing', parseInt(s.dataset.index) === currentIndex);
     });
   }
 
@@ -1227,8 +1241,16 @@
     if (isPlaying) { audio.pause(); isPlaying = false; btnPlay.innerHTML = '&#9654;'; }
     else { audio.play(); isPlaying = true; btnPlay.innerHTML = '&#10074;&#10074;'; }
   });
+  // Find position of current piece in shuffled order
+  function shufflePos() { return shuffledOrder.indexOf(currentIndex); }
+
   $('#btn-prev').addEventListener('click', () => {
-    if (shuffleOn) { playPiece(Math.floor(Math.random() * pieces.length)); return; }
+    if (shuffleOn) {
+      const pos = shufflePos();
+      if (pos > 0) playPiece(shuffledOrder[pos - 1]);
+      else if (repeatMode === 1) playPiece(shuffledOrder[shuffledOrder.length - 1]);
+      return;
+    }
     if (currentIndex > 0) playPiece(currentIndex - 1);
     else if (repeatMode === 1) playPiece(pieces.length - 1);
   });
@@ -1236,9 +1258,13 @@
 
   function playNext() {
     if (shuffleOn) {
-      let next = Math.floor(Math.random() * pieces.length);
-      if (pieces.length > 1) while (next === currentIndex) next = Math.floor(Math.random() * pieces.length);
-      playPiece(next);
+      const pos = shufflePos();
+      if (pos < shuffledOrder.length - 1) playPiece(shuffledOrder[pos + 1]);
+      else if (repeatMode === 1) {
+        buildShuffledOrder();
+        renderAlbum();
+        playPiece(shuffledOrder[0]);
+      } else { isPlaying = false; btnPlay.innerHTML = '&#9654;'; }
       return;
     }
     if (currentIndex < pieces.length - 1) playPiece(currentIndex + 1);
@@ -1252,6 +1278,8 @@
   btnShuffle.addEventListener('click', () => {
     shuffleOn = !shuffleOn;
     btnShuffle.classList.toggle('active', shuffleOn);
+    if (shuffleOn) buildShuffledOrder();
+    renderAlbum();
   });
 
   btnRepeat.addEventListener('click', () => {
@@ -1303,7 +1331,18 @@
     entries.forEach(e => {
       if (e.isIntersecting) {
         const i = parseInt(e.target.dataset.index);
-        if (i !== currentIndex && pieces[i]) playPiece(i);
+        if (i !== currentIndex && pieces[i]) {
+          if (shuffleOn && !isShuffleJumping) {
+            // In shuffle mode, jump to a random room instead
+            isShuffleJumping = true;
+            let next = Math.floor(Math.random() * pieces.length);
+            if (pieces.length > 1) while (next === currentIndex) next = Math.floor(Math.random() * pieces.length);
+            playPiece(next);
+            setTimeout(() => { isShuffleJumping = false; }, 1200);
+          } else if (!shuffleOn) {
+            playPiece(i);
+          }
+        }
       }
     });
   }, { threshold: 0.55 });

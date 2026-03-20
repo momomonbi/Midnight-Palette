@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Midnight Palette</title>
 <style>
-  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Sans+JP:wght@100;300;400&display=swap');
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
   :root{
     --bg:#000;--fg:rgba(255,255,255,.85);--fg-dim:rgba(255,255,255,.35);
@@ -1000,6 +1000,7 @@
 
     // Add to runtime
     pieces.push({ id, title, imageURL, audioURL, colors, message });
+    buildShuffledOrder();
     renderMuseum(); renderAlbum(); renderPieceList();
 
     // Reset form
@@ -1221,9 +1222,10 @@
     // Delete from IndexedDB
     await dbDelete(piece.id);
 
-    if (currentIndex === i) { audio.pause(); isPlaying = false; playerBar.classList.remove('show'); currentIndex = -1; }
+    if (currentIndex === i) { audio.pause(); isPlaying = false; playerBar.classList.remove('show'); currentIndex = -1; updateMediaSession(); }
     else if (currentIndex > i) currentIndex--;
     pieces.splice(i, 1);
+    buildShuffledOrder();
     renderMuseum(); renderAlbum(); renderPieceList();
     viewToggle.classList.toggle('show', pieces.length > 0);
   }
@@ -1249,6 +1251,7 @@
       if (room) room.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
+    updateMediaSession();
     audio.play().then(() => {
       isPlaying = true; btnPlay.innerHTML = '&#10074;&#10074;';
     }).catch(() => {});
@@ -1310,13 +1313,14 @@
   });
 
   let isSeeking = false;
+  const fmtTime = t => `${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
   seekBar.addEventListener('mousedown', () => { isSeeking = true; });
   seekBar.addEventListener('touchstart', () => { isSeeking = true; }, {passive:true});
   seekBar.addEventListener('input', () => {
+    // Display only – don't jump audio during drag
     if (audio.duration) {
-      audio.currentTime = (seekBar.value / 100) * audio.duration;
-      const f = t => `${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
-      timeDisp.textContent = `${f(audio.currentTime)} / ${f(audio.duration)}`;
+      const previewTime = (seekBar.value / 100) * audio.duration;
+      timeDisp.textContent = `${fmtTime(previewTime)} / ${fmtTime(audio.duration)}`;
     }
   });
   seekBar.addEventListener('change', () => {
@@ -1328,8 +1332,7 @@
   audio.addEventListener('timeupdate', () => {
     if (!audio.duration || isSeeking) return;
     seekBar.value = (audio.currentTime / audio.duration) * 100;
-    const f = t => `${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
-    timeDisp.textContent = `${f(audio.currentTime)} / ${f(audio.duration)}`;
+    timeDisp.textContent = `${fmtTime(audio.currentTime)} / ${fmtTime(audio.duration)}`;
   });
   audio.addEventListener('ended', () => {
     if (repeatMode === 2) { audio.currentTime = 0; audio.play(); return; }
@@ -1366,6 +1369,8 @@
   }, { threshold: 0.55 });
 
   function observeRooms() {
+    roomObserver.disconnect();
+    autoPlayObserver.disconnect();
     gallery.querySelectorAll('.museum-room').forEach(r => {
       roomObserver.observe(r);
       autoPlayObserver.observe(r);
@@ -1376,13 +1381,14 @@
   let activeColors = [[80,60,120],[160,100,130],[200,160,180]];
   let smoothData = new Float32Array(256);
   let phase = 0;
+  let animFrameId = null;
 
   function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
   addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
   function drawWave() {
-    requestAnimationFrame(drawWave);
+    animFrameId = requestAnimationFrame(drawWave);
     const W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
 
@@ -1430,6 +1436,101 @@
     ctx.fillRect(0, 0, W, H);
   }
   drawWave();
+
+  /* ── Background tab: pause animation to save battery ── */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
+    } else {
+      if (!animFrameId) drawWave();
+    }
+  });
+
+  /* ── Audio error handling ── */
+  audio.addEventListener('error', () => {
+    const p = currentIndex >= 0 ? pieces[currentIndex] : null;
+    const name = p ? p.title : '不明';
+    console.warn('Audio load error:', name);
+    // Show brief toast notification
+    const toast = document.createElement('div');
+    toast.textContent = `⚠ 「${name}」の読み込みに失敗しました`;
+    Object.assign(toast.style, {
+      position:'fixed', bottom:'5rem', left:'50%', transform:'translateX(-50%)',
+      background:'rgba(180,60,60,.9)', color:'#fff', padding:'.6rem 1.2rem',
+      borderRadius:'8px', fontSize:'.75rem', zIndex:'9000', letterSpacing:'.05em',
+      transition:'opacity .5s', whiteSpace:'nowrap'
+    });
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 600); }, 3000);
+    // Auto-skip to next
+    isPlaying = false; btnPlay.innerHTML = '&#9654;';
+    setTimeout(() => playNext(), 1500);
+  });
+
+  /* ── Media Session API (lock screen controls) ── */
+  function updateMediaSession() {
+    if (!('mediaSession' in navigator)) return;
+    const p = currentIndex >= 0 ? pieces[currentIndex] : null;
+    if (!p) {
+      navigator.mediaSession.metadata = null;
+      return;
+    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: p.title,
+      artist: 'りぴ × もも',
+      album: 'Midnight Palette',
+      artwork: [{ src: p.imageURL, sizes: '512x512', type: 'image/webp' }]
+    });
+  }
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play', () => {
+      if (audio.src) { audio.play(); isPlaying = true; btnPlay.innerHTML = '&#10074;&#10074;'; }
+    });
+    navigator.mediaSession.setActionHandler('pause', () => {
+      audio.pause(); isPlaying = false; btnPlay.innerHTML = '&#9654;';
+    });
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      if (shuffleOn) {
+        const pos = shufflePos();
+        if (pos > 0) playPiece(shuffledOrder[pos - 1]);
+        else if (repeatMode === 1) playPiece(shuffledOrder[shuffledOrder.length - 1]);
+      } else {
+        if (currentIndex > 0) playPiece(currentIndex - 1);
+        else if (repeatMode === 1) playPiece(pieces.length - 1);
+      }
+    });
+    navigator.mediaSession.setActionHandler('nexttrack', () => { playNext(); });
+    navigator.mediaSession.setActionHandler('seekto', (details) => {
+      if (details.seekTime != null && audio.duration) audio.currentTime = details.seekTime;
+    });
+  }
+
+  /* ── Keyboard shortcuts ── */
+  document.addEventListener('keydown', e => {
+    // Don't trigger when typing in inputs
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch (e.code) {
+      case 'Space':
+        e.preventDefault();
+        if (!audio.src) return;
+        if (isPlaying) { audio.pause(); isPlaying = false; btnPlay.innerHTML = '&#9654;'; }
+        else { audio.play(); isPlaying = true; btnPlay.innerHTML = '&#10074;&#10074;'; }
+        break;
+      case 'ArrowRight':
+        e.preventDefault(); playNext(); break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        if (shuffleOn) {
+          const pos = shufflePos();
+          if (pos > 0) playPiece(shuffledOrder[pos - 1]);
+          else if (repeatMode === 1) playPiece(shuffledOrder[shuffledOrder.length - 1]);
+        } else {
+          if (currentIndex > 0) playPiece(currentIndex - 1);
+          else if (repeatMode === 1) playPiece(pieces.length - 1);
+        }
+        break;
+    }
+  });
 
   /* ── Util ── */
   function escHTML(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }

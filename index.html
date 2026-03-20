@@ -673,15 +673,21 @@
     box-shadow:0 8px 30px rgba(0,0,0,.7);
     opacity:0;pointer-events:none;
     transition:opacity .25s, transform .25s;z-index:50;
+    overflow:visible;
+  }
+  /* Below-type popups need flexible height for portrait images */
+  .book-spine .spine-preview.preview-below{
+    bottom:auto;top:105%;
+    width:auto;min-width:clamp(120px, 18vw, 160px);max-width:clamp(180px, 28vw, 240px);
   }
   .book-spine:hover .spine-preview{opacity:1;transform:translateX(-50%) scale(1)}
   .book-spine .spine-preview.preview-left{left:auto;right:0;transform:translateX(0) scale(.9)}
   .book-spine:hover .spine-preview.preview-left{transform:translateX(0) scale(1)}
-  .book-spine .spine-preview.preview-below{bottom:auto;top:105%}
   .book-spine:hover .spine-preview.preview-below{transform:translateX(-50%) scale(1)}
-  .book-spine .spine-preview.preview-below.preview-left{bottom:auto;top:105%}
+  .book-spine .spine-preview.preview-below.preview-left{left:auto;right:0}
   .book-spine:hover .spine-preview.preview-below.preview-left{transform:translateX(0) scale(1)}
-  .book-spine .spine-preview img{width:100%;max-height:clamp(180px, 30vw, 260px);object-fit:contain;border-radius:2px;display:block}
+  .book-spine .spine-preview img{width:100%;border-radius:2px;display:block}
+  .book-spine .spine-preview.preview-below img{width:auto;height:auto;max-width:clamp(160px, 25vw, 220px);max-height:clamp(220px, 40vw, 320px)}
   .book-spine .spine-preview .preview-title{
     font-size:.6rem;text-align:center;padding:.4rem 0 .1rem;
     color:var(--fg);letter-spacing:.08em;

@@ -193,138 +193,159 @@
 
   /* The Frame */
   .museum-frame{
-    --fw: clamp(22px, 4.5vw, 44px); /* total frame width */
+    --fw: clamp(24px, 5vw, 48px); /* total frame width — slightly wider for more depth */
     position:relative;
     padding:var(--fw);
     border-radius:2px;
-    /* Multi-layer gold frame */
+    /* Multi-layer gold frame with stepped molding */
     background:
-      /* Outer bevel highlight */
-      linear-gradient(180deg, #d4b06a 0%, #a8842e 3%, #c9a44e 6%,
-      /* Outer carved molding band */
-      #8b6914 8%, #705610 9%, #a88628 11%, #c9a84e 13%, #d4b86a 14%,
-      #c4a44a 16%, #8b6914 18%, #6b4e0e 19%, #9b7620 21%, #c9a84e 23%,
-      #d4b86a 24%, #c4a44a 26%, #8b6914 28%, #6b4e0e 29%, #9b7620 31%,
-      #c9a84e 33%, #d4b86a 34%,
-      /* Beaded detail row */
-      #705610 36%, #d4bc6e 37%, #f0d888 38%, #d4bc6e 39%, #705610 40%,
-      /* Inner smooth slope */
-      #c4a44a 42%, #b8943a 50%, #a88428 58%, #9b7620 65%,
-      /* Inner lip/groove */
-      #705610 80%, #584008 85%, #3d2c06 90%,
-      /* Innermost dark edge */
-      #2a1e04 95%, #1a1202 100%);
+      /* Outer raised bevel — catches light from above */
+      linear-gradient(180deg, #e8c878 0%, #d4b06a 1.5%, #b8922e 3%, #c9a44e 5%,
+      /* First carved molding channel */
+      #7a5a10 7%, #584008 8%, #8b6914 9%, #c9a84e 11%, #e0c468 12.5%, #d4b86a 14%,
+      #b89030 16%, #7a5a10 17.5%, #584008 18.5%, #8b6914 20%, #c9a84e 22%, #e0c468 23%,
+      /* Second molding ridge */
+      #d4b86a 24.5%, #b89030 26%, #7a5a10 27.5%, #584008 28.5%, #8b6914 30%, #c9a84e 32%,
+      #e0c468 33%, #d4b86a 34%,
+      /* Beaded ornament row */
+      #705610 36%, #c4a44a 36.8%, #f0d888 37.5%, #ffe898 38%, #f0d888 38.5%, #c4a44a 39.2%, #705610 40%,
+      /* Wide inner slope — smooth gradient toward mat */
+      #c4a44a 42%, #bfa040 46%, #b8943a 50%, #a88428 56%, #9b7620 62%, #8a6818 68%,
+      /* Deep inner rabbet/lip */
+      #705610 76%, #584008 82%, #3d2c06 88%,
+      /* Innermost shadow edge */
+      #2a1e04 94%, #1a1202 100%);
     box-shadow:
-      /* Outer drop shadows */
-      0 8px 40px rgba(0,0,0,.65),
-      0 2px 10px rgba(0,0,0,.5),
-      0 0 80px rgba(0,0,0,.3),
-      /* Outer frame edge: top-left light, bottom-right dark */
-      inset 0 2px 0 rgba(255,220,120,.35),
-      inset 0 -2px 0 rgba(0,0,0,.6),
-      inset 2px 0 0 rgba(255,220,120,.2),
-      inset -2px 0 0 rgba(30,20,5,.4),
-      /* Inner depth groove near mat */
-      inset 0 6px 12px rgba(0,0,0,.15),
-      inset 0 -4px 10px rgba(0,0,0,.12),
-      inset 6px 0 10px rgba(0,0,0,.1),
-      inset -4px 0 10px rgba(0,0,0,.08);
+      /* Strong outer drop shadows for wall separation */
+      0 12px 50px rgba(0,0,0,.7),
+      0 4px 14px rgba(0,0,0,.55),
+      0 0 100px rgba(0,0,0,.35),
+      6px 8px 20px rgba(0,0,0,.4),
+      -3px 4px 15px rgba(0,0,0,.25),
+      /* Outer frame edge: pronounced top-left light, bottom-right dark */
+      inset 0 3px 0 rgba(255,225,130,.45),
+      inset 0 -3px 0 rgba(0,0,0,.65),
+      inset 3px 0 0 rgba(255,225,130,.3),
+      inset -3px 0 0 rgba(20,14,4,.5),
+      /* Mid-frame molding depth grooves */
+      inset 0 8px 16px rgba(0,0,0,.18),
+      inset 0 -6px 14px rgba(0,0,0,.16),
+      inset 8px 0 14px rgba(0,0,0,.13),
+      inset -6px 0 14px rgba(0,0,0,.1),
+      /* Deep inner rabbet shadow */
+      inset 0 12px 24px rgba(0,0,0,.12),
+      inset 0 -10px 20px rgba(0,0,0,.08);
     transition:transform .6s cubic-bezier(.25,.46,.45,.94), box-shadow .6s;
   }
-  /* Side frame gradients (left/right matching) */
+  /* Side frame gradients (left/right matching carved bands) */
   .museum-frame::before{
     content:'';position:absolute;inset:0;border-radius:2px;pointer-events:none;
     background:
       linear-gradient(90deg,
-        rgba(212,176,106,.9) 0%, rgba(168,132,46,.85) 3%, rgba(201,168,78,.8) 6%,
-        rgba(139,105,20,.7) 8%, rgba(201,168,78,.5) 15%,
-        transparent 35%, transparent 65%,
-        rgba(201,168,78,.5) 85%, rgba(139,105,20,.7) 92%,
-        rgba(201,168,78,.8) 94%, rgba(168,132,46,.85) 97%, rgba(212,176,106,.9) 100%
+        rgba(232,200,120,.85) 0%, rgba(180,140,40,.9) 2%, rgba(210,170,70,.8) 5%,
+        rgba(120,90,16,.75) 7.5%, rgba(88,64,8,.7) 8.5%, rgba(139,105,20,.65) 10%,
+        rgba(210,180,80,.5) 14%, rgba(224,196,104,.4) 16%,
+        transparent 30%, transparent 70%,
+        rgba(224,196,104,.4) 84%, rgba(210,180,80,.5) 86%,
+        rgba(139,105,20,.65) 90%, rgba(88,64,8,.7) 91.5%, rgba(120,90,16,.75) 92.5%,
+        rgba(210,170,70,.8) 95%, rgba(180,140,40,.9) 98%, rgba(232,200,120,.85) 100%
       );
-    /* Side depth: top bright, bottom dark */
     box-shadow:
-      inset 0 3px 8px rgba(255,220,120,.08),
-      inset 0 -3px 8px rgba(0,0,0,.15);
+      inset 0 4px 10px rgba(255,225,130,.1),
+      inset 0 -4px 10px rgba(0,0,0,.18);
   }
   /* Corner highlights + carved texture overlay */
   .museum-frame::after{
     content:'';position:absolute;inset:0;border-radius:2px;pointer-events:none;
     background:
-      /* Corner accent glints */
-      radial-gradient(ellipse at 0% 0%, rgba(255,230,150,.3) 0%, transparent 20%),
-      radial-gradient(ellipse at 100% 0%, rgba(255,230,150,.18) 0%, transparent 18%),
-      radial-gradient(ellipse at 0% 100%, rgba(255,230,150,.12) 0%, transparent 16%),
-      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,.12) 0%, transparent 20%),
-      /* Diagonal shadow across frame (top-left light source) */
-      linear-gradient(135deg, rgba(255,240,180,.06) 0%, transparent 40%, rgba(0,0,0,.08) 100%),
-      /* Subtle carved grain texture */
+      /* Strong corner accent glints — light from top-left */
+      radial-gradient(ellipse at 0% 0%, rgba(255,235,160,.4) 0%, transparent 22%),
+      radial-gradient(ellipse at 100% 0%, rgba(255,235,160,.2) 0%, transparent 18%),
+      radial-gradient(ellipse at 0% 100%, rgba(255,235,160,.12) 0%, transparent 15%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,.18) 0%, transparent 22%),
+      /* Diagonal light sweep across frame surface */
+      linear-gradient(135deg, rgba(255,240,180,.1) 0%, rgba(255,240,180,.03) 25%, transparent 45%, rgba(0,0,0,.1) 100%),
+      /* Carved wood grain texture */
       repeating-linear-gradient(135deg,
-        transparent 0px, rgba(255,230,140,.04) 1px,
-        transparent 2px, rgba(60,45,10,.05) 3px, transparent 4px
+        transparent 0px, rgba(255,230,140,.05) 1px,
+        transparent 2px, rgba(60,45,10,.06) 3px, transparent 4px
+      ),
+      repeating-linear-gradient(45deg,
+        transparent 0px, rgba(255,230,140,.02) 2px,
+        transparent 3px
       );
   }
   .museum-frame:hover{
     transform:scale(1.005);
     box-shadow:
-      0 12px 55px rgba(0,0,0,.7),
-      0 3px 12px rgba(0,0,0,.5),
-      0 0 120px rgba(0,0,0,.4),
-      inset 0 2px 0 rgba(255,220,120,.4),
-      inset 0 -2px 0 rgba(0,0,0,.6),
-      inset 2px 0 0 rgba(255,220,120,.2),
-      inset -2px 0 0 rgba(30,20,5,.4),
-      inset 0 6px 12px rgba(0,0,0,.15),
-      inset 0 -4px 10px rgba(0,0,0,.12),
-      inset 6px 0 10px rgba(0,0,0,.1),
-      inset -4px 0 10px rgba(0,0,0,.08);
+      0 16px 65px rgba(0,0,0,.75),
+      0 5px 16px rgba(0,0,0,.55),
+      0 0 140px rgba(0,0,0,.4),
+      8px 10px 25px rgba(0,0,0,.45),
+      -4px 5px 18px rgba(0,0,0,.3),
+      inset 0 3px 0 rgba(255,225,130,.5),
+      inset 0 -3px 0 rgba(0,0,0,.65),
+      inset 3px 0 0 rgba(255,225,130,.35),
+      inset -3px 0 0 rgba(20,14,4,.5),
+      inset 0 8px 16px rgba(0,0,0,.18),
+      inset 0 -6px 14px rgba(0,0,0,.16),
+      inset 8px 0 14px rgba(0,0,0,.13),
+      inset -6px 0 14px rgba(0,0,0,.1),
+      inset 0 12px 24px rgba(0,0,0,.12),
+      inset 0 -10px 20px rgba(0,0,0,.08);
   }
   /* Mat / Passepartout */
   .museum-mat{
     padding:clamp(16px, 3vw, 40px);
-    background:linear-gradient(135deg, #ede9e1, #e4dfd6, #eae6dd);
+    background:linear-gradient(145deg, #f0ece4, #e8e3da, #e4dfd6, #eae5dc);
     position:relative;
-    /* Deep inset shadow: frame presses into mat */
+    /* Deep inset shadow: frame presses into mat from all sides */
     box-shadow:
-      inset 0 4px 12px rgba(0,0,0,.25),
-      inset 0 -2px 8px rgba(0,0,0,.1),
-      inset 4px 0 10px rgba(0,0,0,.12),
-      inset -4px 0 10px rgba(0,0,0,.12),
-      inset 0 0 3px rgba(0,0,0,.2);
+      inset 0 6px 18px rgba(0,0,0,.3),
+      inset 0 -3px 12px rgba(0,0,0,.12),
+      inset 6px 0 14px rgba(0,0,0,.15),
+      inset -5px 0 14px rgba(0,0,0,.15),
+      inset 0 0 4px rgba(0,0,0,.25),
+      inset 2px 3px 6px rgba(0,0,0,.1);
   }
   /* Mat inner shadow for depth + top-left light source */
   .museum-mat::before{
     content:'';position:absolute;inset:0;
     box-shadow:
-      inset 0 0 20px rgba(0,0,0,.06),
-      inset 0 1px 0 rgba(255,255,255,.3);
-    background:linear-gradient(145deg, rgba(255,255,255,.05) 0%, transparent 40%, rgba(0,0,0,.03) 100%);
+      inset 0 0 30px rgba(0,0,0,.08),
+      inset 0 2px 0 rgba(255,255,255,.35);
+    background:linear-gradient(145deg, rgba(255,255,255,.08) 0%, transparent 35%, rgba(0,0,0,.04) 100%);
     pointer-events:none;
   }
-  /* Bevel cut around artwork: shadow inside creating depth illusion */
+  /* Bevel cut around artwork: 45-degree cut illusion */
   .museum-mat::after{
     content:'';position:absolute;
     inset:clamp(14px, 2.8vw, 38px);
-    border:1px solid rgba(80,60,20,.06);
+    border:1px solid rgba(80,60,20,.08);
     box-shadow:
       /* Inner bevel: light on top-left, dark on bottom-right */
-      inset 1px 1px 0 rgba(255,255,255,.2),
-      inset -1px -1px 0 rgba(0,0,0,.06),
-      /* Outer glow around bevel cut */
-      0 0 2px rgba(0,0,0,.04);
+      inset 2px 2px 1px rgba(255,255,255,.25),
+      inset -1px -1px 1px rgba(0,0,0,.1),
+      inset 1px 0 0 rgba(255,255,255,.15),
+      inset 0 1px 0 rgba(255,255,255,.15),
+      /* Outer shadow around bevel cut */
+      0 0 3px rgba(0,0,0,.06),
+      1px 1px 2px rgba(0,0,0,.04);
     pointer-events:none;
   }
   .museum-mat img{
     display:block;width:100%;height:auto;
     max-width:min(65vw, 500px);max-height:55vh;
     object-fit:contain;position:relative;z-index:1;
-    /* Canvas thickness: strong bottom/right shadow for 3D depth */
+    /* Canvas thickness: strong directional shadow for 3D depth */
     box-shadow:
-      3px 4px 2px rgba(0,0,0,.25),
-      2px 3px 0px rgba(40,30,15,.3),
-      1px 1px 0px rgba(60,45,20,.35),
-      -1px -1px 0px rgba(255,255,255,.08),
-      0 0 8px rgba(0,0,0,.1);
+      4px 5px 3px rgba(0,0,0,.3),
+      3px 4px 1px rgba(40,30,15,.35),
+      2px 2px 0px rgba(60,45,20,.4),
+      1px 1px 0px rgba(80,60,25,.3),
+      -1px -1px 0px rgba(255,255,255,.1),
+      -1px 0 0px rgba(255,255,255,.06),
+      0 0 10px rgba(0,0,0,.12);
   }
 
   /* Artwork spotlight glow */

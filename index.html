@@ -193,88 +193,112 @@
 
   /* The Frame */
   .museum-frame{
-    --fw: clamp(28px, 5.5vw, 52px);
+    --fw: clamp(24px, 5vw, 48px); /* total frame width — slightly wider for more depth */
     position:relative;
     padding:var(--fw);
-    /* Base gold gradient as fallback/base layer */
-    background:linear-gradient(145deg, #b8922e, #c9a44e 20%, #a88428 50%, #8a6818 80%, #3d2c06);
+    border-radius:2px;
+    /* Multi-layer gold frame with stepped molding */
+    background:
+      /* Outer raised bevel — catches light from above */
+      linear-gradient(180deg, #e8c878 0%, #d4b06a 1.5%, #b8922e 3%, #c9a44e 5%,
+      /* First carved molding channel */
+      #7a5a10 7%, #584008 8%, #8b6914 9%, #c9a84e 11%, #e0c468 12.5%, #d4b86a 14%,
+      #b89030 16%, #7a5a10 17.5%, #584008 18.5%, #8b6914 20%, #c9a84e 22%, #e0c468 23%,
+      /* Second molding ridge */
+      #d4b86a 24.5%, #b89030 26%, #7a5a10 27.5%, #584008 28.5%, #8b6914 30%, #c9a84e 32%,
+      #e0c468 33%, #d4b86a 34%,
+      /* Beaded ornament row */
+      #705610 36%, #c4a44a 36.8%, #f0d888 37.5%, #ffe898 38%, #f0d888 38.5%, #c4a44a 39.2%, #705610 40%,
+      /* Wide inner slope — smooth gradient toward mat */
+      #c4a44a 42%, #bfa040 46%, #b8943a 50%, #a88428 56%, #9b7620 62%, #8a6818 68%,
+      /* Deep inner rabbet/lip */
+      #705610 76%, #584008 82%, #3d2c06 88%,
+      /* Innermost shadow edge */
+      #2a1e04 94%, #1a1202 100%);
     box-shadow:
+      /* Strong outer drop shadows for wall separation */
       0 12px 50px rgba(0,0,0,.7),
       0 4px 14px rgba(0,0,0,.55),
+      0 0 100px rgba(0,0,0,.35),
       6px 8px 20px rgba(0,0,0,.4),
       -3px 4px 15px rgba(0,0,0,.25),
-      inset 0 0 6px rgba(0,0,0,.4);
+      /* Outer frame edge: pronounced top-left light, bottom-right dark */
+      inset 0 3px 0 rgba(255,225,130,.45),
+      inset 0 -3px 0 rgba(0,0,0,.65),
+      inset 3px 0 0 rgba(255,225,130,.3),
+      inset -3px 0 0 rgba(20,14,4,.5),
+      /* Mid-frame molding depth grooves */
+      inset 0 8px 16px rgba(0,0,0,.18),
+      inset 0 -6px 14px rgba(0,0,0,.16),
+      inset 8px 0 14px rgba(0,0,0,.13),
+      inset -6px 0 14px rgba(0,0,0,.1),
+      /* Deep inner rabbet shadow */
+      inset 0 12px 24px rgba(0,0,0,.12),
+      inset 0 -10px 20px rgba(0,0,0,.08);
     transition:transform .6s cubic-bezier(.25,.46,.45,.94), box-shadow .6s;
-    overflow:hidden;
   }
-  /* Inner shadow overlay for depth */
+  /* Side frame gradients (left/right matching carved bands) */
   .museum-frame::before{
-    content:'';position:absolute;inset:0;pointer-events:none;z-index:6;
+    content:'';position:absolute;inset:0;border-radius:2px;pointer-events:none;
+    background:
+      linear-gradient(90deg,
+        rgba(232,200,120,.85) 0%, rgba(180,140,40,.9) 2%, rgba(210,170,70,.8) 5%,
+        rgba(120,90,16,.75) 7.5%, rgba(88,64,8,.7) 8.5%, rgba(139,105,20,.65) 10%,
+        rgba(210,180,80,.5) 14%, rgba(224,196,104,.4) 16%,
+        transparent 30%, transparent 70%,
+        rgba(224,196,104,.4) 84%, rgba(210,180,80,.5) 86%,
+        rgba(139,105,20,.65) 90%, rgba(88,64,8,.7) 91.5%, rgba(120,90,16,.75) 92.5%,
+        rgba(210,170,70,.8) 95%, rgba(180,140,40,.9) 98%, rgba(232,200,120,.85) 100%
+      );
     box-shadow:
-      inset 0 5px 14px rgba(0,0,0,.22),
-      inset 0 -5px 12px rgba(0,0,0,.2),
-      inset 5px 0 12px rgba(0,0,0,.16),
-      inset -5px 0 12px rgba(0,0,0,.14);
+      inset 0 4px 10px rgba(255,225,130,.1),
+      inset 0 -4px 10px rgba(0,0,0,.18);
   }
-  /* Subtle light sweep */
+  /* Corner highlights + carved texture overlay */
   .museum-frame::after{
-    content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
-    background:linear-gradient(135deg, rgba(255,240,180,.08) 0%, transparent 40%, rgba(0,0,0,.06) 100%);
+    content:'';position:absolute;inset:0;border-radius:2px;pointer-events:none;
+    background:
+      /* Strong corner accent glints — light from top-left */
+      radial-gradient(ellipse at 0% 0%, rgba(255,235,160,.4) 0%, transparent 22%),
+      radial-gradient(ellipse at 100% 0%, rgba(255,235,160,.2) 0%, transparent 18%),
+      radial-gradient(ellipse at 0% 100%, rgba(255,235,160,.12) 0%, transparent 15%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,.18) 0%, transparent 22%),
+      /* Diagonal light sweep across frame surface */
+      linear-gradient(135deg, rgba(255,240,180,.1) 0%, rgba(255,240,180,.03) 25%, transparent 45%, rgba(0,0,0,.1) 100%),
+      /* Carved wood grain texture */
+      repeating-linear-gradient(135deg,
+        transparent 0px, rgba(255,230,140,.05) 1px,
+        transparent 2px, rgba(60,45,10,.06) 3px, transparent 4px
+      ),
+      repeating-linear-gradient(45deg,
+        transparent 0px, rgba(255,230,140,.02) 2px,
+        transparent 3px
+      );
   }
-  /* Frame corner & edge images */
-  .frame-corner,.frame-edge{
-    position:absolute;pointer-events:none;
-  }
-  .frame-corner img,.frame-edge img{
-    display:block;width:100%;height:100%;
-  }
-  /* Corners — large ornamental pieces */
-  .frame-corner{
-    width:clamp(55px, 14vw, 110px);height:auto;z-index:4;
-  }
-  .frame-corner.tl{top:-1px;left:-1px}
-  .frame-corner.tr{top:-1px;right:-1px}
-  .frame-corner.bl{bottom:-1px;left:-1px}
-  .frame-corner.br{bottom:-1px;right:-1px}
-  .frame-corner.tr img{transform:scaleX(-1)}
-  .frame-corner.bl img{transform:scaleY(-1)}
-  .frame-corner.br img{transform:scale(-1,-1)}
-  /* Edge bars — molding along sides */
-  .frame-edge{z-index:3}
-  .frame-edge.top{
-    top:2px;left:clamp(50px,13vw,100px);right:clamp(50px,13vw,100px);
-    height:clamp(12px,2.5vw,22px);
-  }
-  .frame-edge.top img{object-fit:fill}
-  .frame-edge.bottom{
-    bottom:2px;left:12%;right:12%;
-    height:clamp(14px,3vw,26px);
-  }
-  .frame-edge.bottom img{object-fit:fill}
-  .frame-edge.left{
-    top:clamp(50px,13vw,100px);bottom:clamp(50px,13vw,100px);left:2px;
-    width:clamp(12px,2.5vw,22px);
-  }
-  .frame-edge.left img{object-fit:fill}
-  .frame-edge.right{
-    top:clamp(50px,13vw,100px);bottom:clamp(50px,13vw,100px);right:2px;
-    width:clamp(12px,2.5vw,22px);
-  }
-  .frame-edge.right img{object-fit:fill}
   .museum-frame:hover{
     transform:scale(1.005);
     box-shadow:
       0 16px 65px rgba(0,0,0,.75),
       0 5px 16px rgba(0,0,0,.55),
+      0 0 140px rgba(0,0,0,.4),
       8px 10px 25px rgba(0,0,0,.45),
       -4px 5px 18px rgba(0,0,0,.3),
-      inset 0 0 8px rgba(0,0,0,.5);
+      inset 0 3px 0 rgba(255,225,130,.5),
+      inset 0 -3px 0 rgba(0,0,0,.65),
+      inset 3px 0 0 rgba(255,225,130,.35),
+      inset -3px 0 0 rgba(20,14,4,.5),
+      inset 0 8px 16px rgba(0,0,0,.18),
+      inset 0 -6px 14px rgba(0,0,0,.16),
+      inset 8px 0 14px rgba(0,0,0,.13),
+      inset -6px 0 14px rgba(0,0,0,.1),
+      inset 0 12px 24px rgba(0,0,0,.12),
+      inset 0 -10px 20px rgba(0,0,0,.08);
   }
   /* Mat / Passepartout */
   .museum-mat{
     padding:clamp(16px, 3vw, 40px);
     background:linear-gradient(145deg, #f0ece4, #e8e3da, #e4dfd6, #eae5dc);
-    position:relative;z-index:5;
+    position:relative;
     /* Deep inset shadow: frame presses into mat from all sides */
     box-shadow:
       inset 0 6px 18px rgba(0,0,0,.3),
@@ -1134,18 +1158,6 @@
 
       const frame = document.createElement('div');
       frame.className = 'museum-frame';
-
-      // Add ornamental frame parts
-      frame.innerHTML = `
-        <div class="frame-corner tl"><img src="frame/frame_corner_tl.webp" alt="" loading="lazy"></div>
-        <div class="frame-corner tr"><img src="frame/frame_corner_tl.webp" alt="" loading="lazy"></div>
-        <div class="frame-corner bl"><img src="frame/frame_corner_bl.webp" alt="" loading="lazy"></div>
-        <div class="frame-corner br"><img src="frame/frame_corner_bl.webp" alt="" loading="lazy"></div>
-        <div class="frame-edge top"><img src="frame/frame_bar_plain.webp" alt="" loading="lazy"></div>
-        <div class="frame-edge bottom"><img src="frame/frame_bar_bottom.webp" alt="" loading="lazy"></div>
-        <div class="frame-edge left"><img src="frame/frame_bar_left.webp" alt="" loading="lazy"></div>
-        <div class="frame-edge right"><img src="frame/frame_bar_right.webp" alt="" loading="lazy"></div>
-      `;
 
       const mat = document.createElement('div');
       mat.className = 'museum-mat';

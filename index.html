@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Midnight Palette</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Sans+JP:wght@100;300;400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+JP:wght@100;300;400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
   :root{
@@ -377,6 +377,54 @@
   }
   .museum-message .msg-deco-left::before{ content:'\2014\2002'; }
   .museum-message .msg-deco-right::before{ content:'\2002\2014'; }
+
+  /* Museum Date — exhibition poster style */
+  .museum-date{
+    margin-top:1.8rem;text-align:center;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .8s ease .45s, transform .8s ease .45s;
+  }
+  .museum-room.visible .museum-date{opacity:1;transform:translateY(0)}
+  .museum-date .date-inner{
+    display:inline-flex;align-items:baseline;gap:.1em;
+    font-family:'Playfair Display','Cormorant Garamond',serif;
+    color:rgba(255,255,255,.22);
+    letter-spacing:.02em;line-height:1;
+  }
+  .museum-date .date-year{
+    font-size:clamp(.55rem,1.2vw,.7rem);font-weight:400;font-style:italic;
+    color:rgba(138,122,98,.35);letter-spacing:.08em;
+    margin-right:.15em;
+  }
+  .museum-date .date-month{
+    font-size:clamp(1.4rem,4vw,2.2rem);font-weight:600;
+    background:linear-gradient(180deg, rgba(138,122,98,.28), rgba(196,120,141,.18));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:.85;
+  }
+  .museum-date .date-slash{
+    font-size:clamp(.8rem,2vw,1.1rem);font-weight:300;
+    color:rgba(138,122,98,.18);margin:0 .05em;
+    font-style:italic;
+  }
+  .museum-date .date-day{
+    font-size:clamp(1.4rem,4vw,2.2rem);font-weight:600;
+    background:linear-gradient(180deg, rgba(138,122,98,.28), rgba(196,120,141,.18));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:.85;
+  }
+  .museum-date .date-dot{
+    font-size:clamp(.5rem,1vw,.65rem);color:rgba(138,122,98,.25);
+    margin:0 .1em;align-self:center;
+  }
+
+  /* Album preview date */
+  .spine-preview .preview-date{
+    font-family:'Playfair Display','Cormorant Garamond',serif;
+    font-size:.5rem;font-style:italic;
+    color:rgba(255,255,255,.3);letter-spacing:.1em;
+    text-align:center;padding-bottom:.2rem;margin-top:-.1rem;
+  }
 
   /* Floor reflection */
   .museum-reflection{
@@ -839,29 +887,29 @@
 
   /* ── Presets ── */
   const PRESETS = [
-    { title: '星屑ノイジーデイズ', image: 'file/星屑ノイジーデイズ/sample1.webp', audio: 'file/星屑ノイジーデイズ/仮8.mp3', message: '星屑と甘い声が混ざり合う夜' },
-    { title: '星屑ノイジーデイズ Piano', image: 'file/星屑ノイジーデイズ Piano/sample3.webp', audio: 'file/星屑ノイジーデイズ Piano/星屑ピアノ.mp3', message: '揺るがない輪郭、柔らかな旋律' },
-    { title: 'Day1', image: 'file/Day1/day1(5).webp', audio: 'file/Day1/day1デモ4.mp3', message: '会いたいのに、さよならがつらい' },
-    { title: 'Day1 Piano', image: 'file/Day1 Piano/day1(4).webp', audio: 'file/Day1 Piano/day1 piano.mp3', message: 'それでも… 愛して、愛させて' },
-    { title: 'time escape', image: 'file/time escape/1.webp', audio: 'file/time escape/Time Escape.mp3', message: '時の檻を抜け出す鼓動' },
-    { title: 'アイスは飲み物', image: 'file/アイスは飲み物/86.webp', audio: 'file/アイスは飲み物/アイスは飲み物.mp3', message: '溶けていく甘さの向こう側' },
-    { title: 'アイスは飲み物 Piano', image: 'file/アイスは飲み物 Piano/86.webp', audio: 'file/アイスは飲み物 Piano/アイスは飲み物 Piano.mp3', message: '甘い記憶、ゆっくり溶けて' },
-    { title: 'クジラの亡霊', image: 'file/クジラの亡霊/イラスト82.webp', audio: 'file/クジラの亡霊/くじらの亡霊.mp3', message: '長い影は水底を漂う亡霊' },
-    { title: 'サンフラワースピンナー', image: 'file/サンフラワースピンナー/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー/サンフラワースピンナ.mp3', message: '眩暈パノラマ、もっと高く踊れ' },
-    { title: 'サンフラワースピンナー Piano', image: 'file/サンフラワースピンナー Piano/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー Piano/サンフラワースピンナーピアノソロ.mp3', message: 'ピアノの雨粒、花びらと踊れ' },
-    { title: '不完全な祈り', image: 'file/不完全な祈り/8.webp', audio: 'file/不完全な祈り/不完全な祈り.mp3', message: '完全じゃないから、私は祈る' },
-    { title: '光ト闇ノDiscord', image: 'file/光ト闇ノDiscord/2.webp', audio: 'file/光ト闇ノDiscord/光ト闇ノDiscord.mp3', message: '心の夜明けは、闇を抱くとき' },
-    { title: '光ト闇ノ静寂ニ咲ク Piano', image: 'file/光ト闇ノ静寂ニ咲ク Piano/103.webp', audio: 'file/光ト闇ノ静寂ニ咲ク Piano/光ト闇ノ静寂ニ咲ク Piano2.mp3', message: '静寂から生まれる、ひそやかな共鳴' },
-    { title: '剣に刻む絶望交響曲', image: 'file/剣に刻む絶望交響曲/イラスト99 6.webp', audio: 'file/剣に刻む絶望交響曲/剣に刻む piano.mp3', message: '闇こそ帰る場所' },
-    { title: '心地よい場所', image: 'file/心地よい場所/イラスト99.webp', audio: 'file/心地よい場所/心地よい場所.mp3', message: '触れそうで触れられない距離が愛しい' },
-    { title: '心地よい場所 Piano', image: 'file/心地よい場所 Piano/イラスト99 2.webp', audio: 'file/心地よい場所 Piano/心地よい場所 piano.mp3', message: 'この心地よい距離を信じていたい' },
-    { title: '恋焦がれ', image: 'file/恋焦がれ/10.webp', audio: 'file/恋焦がれ/恋焦がれて想いは永遠に.mp3', message: '青春の中で、ただひたすら見つめていた' },
-    { title: '星降る奇跡', image: 'file/星降る奇跡/DJI_20251116131605_0101_D.webp', audio: 'file/星降る奇跡/30-星降る軌跡.mp3', message: '偶然じゃない、不思議なほどの必然' },
-    { title: '秘密のパレット', image: 'file/秘密のパレット/イラスト91 3-2.webp', audio: 'file/秘密のパレット/秘密のパレット.mp3', message: '闇夜に咲く、一輪の心臓' },
-    { title: '秘密のパレット Piano', image: 'file/秘密のパレット Piano/愛は毒薬　差分⑤.webp', audio: 'file/秘密のパレット Piano/秘密のパレット piano.mp3', message: '囁く声、秘密の前奏曲' },
-    { title: '酒は水は合言葉', image: 'file/酒は水は合言葉/3d018ef544e94f26.webp', audio: 'file/酒は水は合言葉/酒は水は合言葉.mp3', message: 'ふわり酔いしれた先のカワイイ' },
-    { title: '酒は水は合言葉 Piano', image: 'file/酒は水は合言葉 Piano/88.webp', audio: 'file/酒は水は合言葉 Piano/酒は水は合言葉ピアノソロ.mp3', message: '甘く揺れるレゾナンス' },
-    { title: 'ケーキは肉', image: 'file/ケーキは肉/ケーキは肉.webp', audio: 'file/ケーキは肉/ケーキは肉.mp3', message: '甘さと命が溶け合う境界線' },
+    { title: '星屑ノイジーデイズ', image: 'file/星屑ノイジーデイズ/sample1.webp', audio: 'file/星屑ノイジーデイズ/仮8.mp3', message: '星屑と甘い声が混ざり合う夜', date: '2024/12/14' },
+    { title: '星屑ノイジーデイズ Piano', image: 'file/星屑ノイジーデイズ Piano/sample3.webp', audio: 'file/星屑ノイジーデイズ Piano/星屑ピアノ.mp3', message: '揺るがない輪郭、柔らかな旋律', date: '2025/11/1' },
+    { title: 'Day1', image: 'file/Day1/day1(5).webp', audio: 'file/Day1/day1デモ4.mp3', message: '会いたいのに、さよならがつらい', date: '2025/3/8' },
+    { title: 'Day1 Piano', image: 'file/Day1 Piano/day1(4).webp', audio: 'file/Day1 Piano/day1 piano.mp3', message: 'それでも… 愛して、愛させて', date: '2025/11/21' },
+    { title: 'time escape', image: 'file/time escape/1.webp', audio: 'file/time escape/Time Escape.mp3', message: '時の檻を抜け出す鼓動', date: '2025/1/9' },
+    { title: 'アイスは飲み物', image: 'file/アイスは飲み物/86.webp', audio: 'file/アイスは飲み物/アイスは飲み物.mp3', message: '溶けていく甘さの向こう側', date: '2025/2/1' },
+    { title: 'アイスは飲み物 Piano', image: 'file/アイスは飲み物 Piano/86.webp', audio: 'file/アイスは飲み物 Piano/アイスは飲み物 Piano.mp3', message: '甘い記憶、ゆっくり溶けて', date: '2025/11/9' },
+    { title: 'クジラの亡霊', image: 'file/クジラの亡霊/イラスト82.webp', audio: 'file/クジラの亡霊/くじらの亡霊.mp3', message: '長い影は水底を漂う亡霊', date: '2024/12/24' },
+    { title: 'サンフラワースピンナー', image: 'file/サンフラワースピンナー/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー/サンフラワースピンナ.mp3', message: '眩暈パノラマ、もっと高く踊れ', date: '2025/5/30' },
+    { title: 'サンフラワースピンナー Piano', image: 'file/サンフラワースピンナー Piano/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー Piano/サンフラワースピンナーピアノソロ.mp3', message: 'ピアノの雨粒、花びらと踊れ', date: '2025/5/30' },
+    { title: '不完全な祈り', image: 'file/不完全な祈り/8.webp', audio: 'file/不完全な祈り/不完全な祈り.mp3', message: '完全じゃないから、私は祈る', date: '2026/1/16' },
+    { title: '光ト闇ノDiscord', image: 'file/光ト闇ノDiscord/2.webp', audio: 'file/光ト闇ノDiscord/光ト闇ノDiscord.mp3', message: '心の夜明けは、闇を抱くとき', date: '2025/4/1' },
+    { title: '光ト闇ノ静寂ニ咲ク Piano', image: 'file/光ト闇ノ静寂ニ咲ク Piano/103.webp', audio: 'file/光ト闇ノ静寂ニ咲ク Piano/光ト闇ノ静寂ニ咲ク Piano2.mp3', message: '静寂から生まれる、ひそやかな共鳴', date: '2025/6/25' },
+    { title: '剣に刻む絶望交響曲', image: 'file/剣に刻む絶望交響曲/イラスト99 6.webp', audio: 'file/剣に刻む絶望交響曲/剣に刻む piano.mp3', message: '闇こそ帰る場所', date: '2025/3/30' },
+    { title: '心地よい場所', image: 'file/心地よい場所/イラスト99.webp', audio: 'file/心地よい場所/心地よい場所.mp3', message: '触れそうで触れられない距離が愛しい', date: '2025/1/28' },
+    { title: '心地よい場所 Piano', image: 'file/心地よい場所 Piano/イラスト99 2.webp', audio: 'file/心地よい場所 Piano/心地よい場所 piano.mp3', message: 'この心地よい距離を信じていたい', date: '2025/11/22' },
+    { title: '恋焦がれ', image: 'file/恋焦がれ/10.webp', audio: 'file/恋焦がれ/恋焦がれて想いは永遠に.mp3', message: '青春の中で、ただひたすら見つめていた', date: '2025/1/23' },
+    { title: '星降る奇跡', image: 'file/星降る奇跡/DJI_20251116131605_0101_D.webp', audio: 'file/星降る奇跡/30-星降る軌跡.mp3', message: '偶然じゃない、不思議なほどの必然', date: '2025/2/6' },
+    { title: '秘密のパレット', image: 'file/秘密のパレット/イラスト91 3-2.webp', audio: 'file/秘密のパレット/秘密のパレット.mp3', message: '闇夜に咲く、一輪の心臓', date: '2025/2/11' },
+    { title: '秘密のパレット Piano', image: 'file/秘密のパレット Piano/愛は毒薬　差分⑤.webp', audio: 'file/秘密のパレット Piano/秘密のパレット piano.mp3', message: '囁く声、秘密の前奏曲', date: '2025/11/23' },
+    { title: '酒は水は合言葉', image: 'file/酒は水は合言葉/3d018ef544e94f26.webp', audio: 'file/酒は水は合言葉/酒は水は合言葉.mp3', message: 'ふわり酔いしれた先のカワイイ', date: '2025/1/7' },
+    { title: '酒は水は合言葉 Piano', image: 'file/酒は水は合言葉 Piano/88.webp', audio: 'file/酒は水は合言葉 Piano/酒は水は合言葉ピアノソロ.mp3', message: '甘く揺れるレゾナンス', date: '2025/6/30' },
+    { title: 'ケーキは肉', image: 'file/ケーキは肉/ケーキは肉.webp', audio: 'file/ケーキは肉/ケーキは肉.mp3', message: '甘さと命が溶け合う境界線', date: '2024/12/20' },
   ];
 
   /* ── State ── */
@@ -977,6 +1025,13 @@
     });
   }
 
+  /* ── Date formatting helper ── */
+  function formatDateHTML(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('/');
+    return `<span class="date-year">${y}.</span><span class="date-month">${parseInt(m)}</span><span class="date-slash">/</span><span class="date-day">${parseInt(d)}</span>`;
+  }
+
   /* ── Add piece ── */
   btnAdd.addEventListener('click', async () => {
     btnAdd.disabled = true;
@@ -1029,6 +1084,7 @@
         colors,
         secret: '',
         message: pr.message || '',
+        date: pr.date || '',
         preset: true
       });
     }
@@ -1107,6 +1163,13 @@
         room.appendChild(msgEl);
       }
 
+      if (p.date) {
+        const dateEl = document.createElement('div');
+        dateEl.className = 'museum-date';
+        dateEl.innerHTML = `<div class="date-inner">${formatDateHTML(p.date)}</div>`;
+        room.appendChild(dateEl);
+      }
+
       const refl = document.createElement('div');
       refl.className = 'museum-reflection';
       room.appendChild(refl);
@@ -1166,6 +1229,7 @@
           <div class="spine-preview${previewCls}">
             <img src="${p.imageURL}" alt="" loading="lazy">
             <div class="preview-title">${escHTML(p.title)}</div>
+            ${p.date ? `<div class="preview-date">${p.date}</div>` : ''}
           </div>
         `;
 

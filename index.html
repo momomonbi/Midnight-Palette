@@ -487,7 +487,7 @@
   .bookshelf-year{
     font-family:'Playfair Display','Cormorant Garamond',serif;
     font-size:clamp(.55rem,1.2vw,.72rem);font-weight:400;font-style:italic;
-    color:rgba(196,168,140,.35);letter-spacing:.15em;
+    color:rgba(220,195,165,.5);letter-spacing:.15em;
     padding:0 1.8rem .2rem;
   }
 
@@ -781,7 +781,7 @@
 
   /* ═══ Empty State ═══ */
   #empty-state{
-    min-height:100vh;display:flex;flex-direction:column;
+    min-height:100vh;display:none;flex-direction:column;
     align-items:center;justify-content:center;text-align:center;padding:2rem;
   }
   #empty-state .empty-icon{
@@ -1017,7 +1017,11 @@
   const audio = new Audio();
   audio.crossOrigin = 'anonymous';
 
-  enterBtn.addEventListener('click', () => {
+  enterBtn.addEventListener('click', async () => {
+    // Wait for preload to finish before showing gallery
+    enterBtn.textContent = 'Loading…';
+    enterBtn.style.pointerEvents = 'none';
+    await preloadPromise;
     splash.classList.add('hide');
     initAudio();
   });
@@ -1703,8 +1707,8 @@
   /* ── Util ── */
   function escHTML(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-  /* ══ App Init – open DB then restore saved pieces ══ */
-  openDB().then(() => loadFromDB()).catch(err => console.warn('DB error:', err));
+  /* ══ App Init – preload during splash screen ══ */
+  const preloadPromise = openDB().then(() => loadFromDB()).catch(err => console.warn('DB error:', err));
 
 })();
 </script>

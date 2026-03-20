@@ -480,9 +480,11 @@
   /* ═══ Realistic Wooden Bookshelf — Furniture Grade ═══ */
   .bookshelf{
     max-width:900px;margin:0 auto 2.5rem;
+    position:relative;z-index:1;
     transform:translateZ(0);will-change:transform;
     filter:drop-shadow(0 60px 120px rgba(0,0,0,.45));
   }
+  .bookshelf:has(.book-spine:hover){z-index:10}
   .bookshelf:first-child{margin-top:1rem}
   .bookshelf-year{
     font-family:'Playfair Display','Cormorant Garamond',serif;

@@ -458,6 +458,12 @@
   /* ─── Bookshelf ─── */
   .bookshelf{max-width:900px;margin:0 auto 3rem}
   .bookshelf:first-child{margin-top:1rem}
+  .bookshelf-year{
+    font-family:'Playfair Display','Cormorant Garamond',serif;
+    font-size:clamp(.7rem,1.8vw,1rem);font-weight:400;font-style:italic;
+    color:rgba(196,168,140,.45);letter-spacing:.15em;
+    padding:0 1.8rem .4rem;
+  }
   .bookshelf-row{
     display:flex;align-items:flex-end;
     padding:0 1.5rem;min-height:clamp(200px, 35vw, 320px);
@@ -1194,27 +1200,82 @@
     albumBookshelf.innerHTML = '';
     const perShelf = Math.max(6, Math.min(11, Math.floor(window.innerWidth / 65)));
 
-    // Use shuffled order when shuffle is on
-    const displayOrder = shuffleOn ? shuffledOrder : pieces.map((_, i) => i);
+    if (shuffleOn) {
+      // Shuffle mode: flat random order, no year grouping
+      const displayOrder = shuffledOrder;
+      for (let s = 0; s < displayOrder.length; s += perShelf) {
+        const chunk = displayOrder.slice(s, s + perShelf);
+        buildShelf(chunk, s === 0);
+      }
+    } else {
+      // Default: group by year/month, sorted chronologically
+      const monthMap = new Map();
+      pieces.forEach((p, i) => {
+        if (!p.date) {
+          const key = 'Other';
+          if (!monthMap.has(key)) monthMap.set(key, []);
+          monthMap.get(key).push({ idx: i, date: '' });
+          return;
+        }
+        const [y, m] = p.date.split('/');
+        const key = `${y}/${m}`;
+        if (!monthMap.has(key)) monthMap.set(key, []);
+        monthMap.get(key).push({ idx: i, date: p.date });
+      });
+      // Sort month keys chronologically
+      const sortedKeys = [...monthMap.keys()].sort((a, b) => {
+        if (a === 'Other') return 1;
+        if (b === 'Other') return -1;
+        const [ay, am] = a.split('/').map(Number);
+        const [by, bm] = b.split('/').map(Number);
+        return ay !== by ? ay - by : am - bm;
+      });
+      // Sort pieces within each month by day
+      let isFirst = true;
+      sortedKeys.forEach(key => {
+        const items = monthMap.get(key);
+        items.sort((a, b) => {
+          const da = a.date ? new Date(a.date.replace(/\//g, '-')) : new Date(0);
+          const db = b.date ? new Date(b.date.replace(/\//g, '-')) : new Date(0);
+          return da - db;
+        });
+        const indices = items.map(it => it.idx);
+        // Format label: "2024 / 12" style
+        let label = key;
+        if (key !== 'Other') {
+          const [y, m] = key.split('/');
+          label = `${y} . ${parseInt(m)}`;
+        }
+        for (let s = 0; s < indices.length; s += perShelf) {
+          const chunk = indices.slice(s, s + perShelf);
+          buildShelf(chunk, isFirst, s === 0 ? label : null);
+          isFirst = false;
+        }
+      });
+    }
+    highlightAlbumPlaying();
 
-    for (let s = 0; s < displayOrder.length; s += perShelf) {
+    function buildShelf(chunk, isFirstShelf, yearLabel) {
       const shelf = document.createElement('div');
       shelf.className = 'bookshelf';
+
+      if (yearLabel) {
+        const label = document.createElement('div');
+        label.className = 'bookshelf-year';
+        label.textContent = yearLabel;
+        shelf.appendChild(label);
+      }
 
       const row = document.createElement('div');
       row.className = 'bookshelf-row';
 
-      const chunk = displayOrder.slice(s, s + perShelf);
       const totalInRow = chunk.length;
-
-      const isFirstShelf = (s === 0);
       chunk.forEach((pieceIdx, j) => {
         const p = pieces[pieceIdx];
         const spine = document.createElement('div');
         spine.className = 'book-spine';
         spine.dataset.index = pieceIdx;
 
-        // Vary height slightly for realism
         const hVar = 0.92 + Math.random() * 0.08;
         spine.style.height = `calc(clamp(190px, 33vw, 300px) * ${hVar.toFixed(2)})`;
 
@@ -1245,7 +1306,6 @@
 
       albumBookshelf.appendChild(shelf);
     }
-    highlightAlbumPlaying();
   }
 
   function highlightAlbumPlaying() {

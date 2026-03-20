@@ -507,7 +507,7 @@
   <label>Music</label>
   <div class="file-drop" id="drop-audio">
     ももの曲をドラッグ or クリック
-    <input type="file" accept="audio/*" id="inp-audio">
+    <input type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.aac,audio/mpeg,audio/mp4,audio/wav,audio/ogg,audio/aac" id="inp-audio">
     <div class="file-name" id="fname-audio"></div>
   </div>
   <label>Secret Message</label>
@@ -616,8 +616,34 @@
     return fetch(url).then(r => r.blob());
   }
 
+  /* ── Presets ── */
+  const PRESETS = [
+    { title: '星屑ノイジーデイズ', image: 'file/星屑ノイジーデイズ/sample1.webp', audio: 'file/星屑ノイジーデイズ/仮8.mp3' },
+    { title: '星屑ノイジーデイズ Piano', image: 'file/星屑ノイジーデイズ Piano/sample3.webp', audio: 'file/星屑ノイジーデイズ Piano/星屑ピアノ.mp3' },
+    { title: 'Day1', image: 'file/Day1/day1(5).webp', audio: 'file/Day1/day1デモ4.mp3' },
+    { title: 'Day1 Piano', image: 'file/Day1 Piano/day1(4).webp', audio: 'file/Day1 Piano/day1 piano.mp3' },
+    { title: 'time escape', image: 'file/time escape/1.webp', audio: 'file/time escape/Time Escape.mp3' },
+    { title: 'アイスは飲み物', image: 'file/アイスは飲み物/86.webp', audio: 'file/アイスは飲み物/アイスは飲み物.mp3' },
+    { title: 'アイスは飲み物ピアノ', image: 'file/アイスは飲み物ピアノ/86.webp', audio: 'file/アイスは飲み物ピアノ/アイスは飲み物ピアノ.mp3' },
+    { title: 'クジラの亡霊', image: 'file/クジラの亡霊/イラスト82.webp', audio: 'file/クジラの亡霊/くじらの亡霊.mp3' },
+    { title: 'サンフラワースピンナー', image: 'file/サンフラワースピンナー/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー/サンフラワースピンナ.mp3' },
+    { title: 'サンフラワースピンナー Piano', image: 'file/サンフラワースピンナー Piano/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー Piano/サンフラワースピンナーピアノソロ.mp3' },
+    { title: '不完全な祈り', image: 'file/不完全な祈り/8.webp', audio: 'file/不完全な祈り/不完全な祈り.mp3' },
+    { title: '光ト闇ノDiscord', image: 'file/光ト闇ノDiscord/2.webp', audio: 'file/光ト闇ノDiscord/光ト闇ノDiscord.mp3' },
+    { title: '光ト闇ノ静寂ニ咲ク', image: 'file/光ト闇ノ静寂ニ咲ク/103.webp', audio: 'file/光ト闇ノ静寂ニ咲ク/光ト闇ノ静寂ニ咲ク2.mp3' },
+    { title: '剣に刻む絶望交響曲', image: 'file/剣に刻む絶望交響曲/イラスト99 6.webp', audio: 'file/剣に刻む絶望交響曲/剣に刻む piano.mp3' },
+    { title: '心地よい場所', image: 'file/心地よい場所/イラスト99.webp', audio: 'file/心地よい場所/心地よい場所.mp3' },
+    { title: '心地よい場所 Piano', image: 'file/心地よい場所 Piano/イラスト99 2.webp', audio: 'file/心地よい場所 Piano/心地よい場所 piano.mp3' },
+    { title: '恋焦がれ', image: 'file/恋焦がれ/10.webp', audio: 'file/恋焦がれ/恋焦がれて想いは永遠に.mp3' },
+    { title: '星降る奇跡', image: 'file/星降る奇跡/DJI_20251116131605_0101_D.webp', audio: 'file/星降る奇跡/30-星降る軌跡.mp3' },
+    { title: '秘密のパレット', image: 'file/秘密のパレット/イラスト91 3-2.webp', audio: 'file/秘密のパレット/秘密のパレット.mp3' },
+    { title: '秘密のパレット Piano', image: 'file/秘密のパレット Piano/愛は毒薬　差分⑤.webp', audio: 'file/秘密のパレット Piano/秘密のパレット piano.mp3' },
+    { title: '酒は水は合言葉', image: 'file/酒は水は合言葉/3d018ef544e94f26.webp', audio: 'file/酒は水は合言葉/酒は水は合言葉.mp3' },
+    { title: '酒は水は合言葉 Piano', image: 'file/酒は水は合言葉 Piano/88.webp', audio: 'file/酒は水は合言葉 Piano/酒は水は合言葉ピアノソロ.mp3' },
+  ];
+
   /* ── State ── */
-  let pieces = [];      // runtime: { id, title, imageURL, audioURL, colors, secret }
+  let pieces = [];      // runtime: { id, title, imageURL, audioURL, colors, secret, preset? }
   let currentIndex = -1;
   let isPlaying = false;
   let viewMode = 'museum';
@@ -763,10 +789,23 @@
     viewToggle.classList.toggle('show', pieces.length > 0);
   });
 
-  /* ── Load saved pieces from IndexedDB ── */
+  /* ── Load presets + saved pieces from IndexedDB ── */
   async function loadFromDB() {
+    // Load presets first
+    for (const pr of PRESETS) {
+      const colors = await extractColors(pr.image).catch(() => [[80,60,120],[160,100,130],[200,160,180]]);
+      pieces.push({
+        id: 'preset_' + pr.title,
+        title: pr.title,
+        imageURL: pr.image,
+        audioURL: pr.audio,
+        colors,
+        secret: '',
+        preset: true
+      });
+    }
+    // Then load user-added pieces from IndexedDB
     const saved = await dbGetAll();
-    // Sort by id (chronological)
     saved.sort((a, b) => a.id - b.id);
     for (const rec of saved) {
       const imageURL = URL.createObjectURL(rec.imageBlob);
@@ -899,18 +938,20 @@
           <span class="title">${escHTML(p.title)}</span>
           <span class="sub">${p.secret ? '&hearts; secret' : ''}</span>
         </div>
-        <div class="del" data-i="${i}">&times;</div>
+        ${p.preset ? '' : `<div class="del" data-i="${i}">&times;</div>`}
       `;
       item.querySelector('.info').addEventListener('click', () => {
         playPiece(i); sidebar.classList.remove('open'); navToggle.classList.remove('open');
       });
-      item.querySelector('.del').addEventListener('click', e => { e.stopPropagation(); removePiece(i); });
+      const delBtn = item.querySelector('.del');
+      if (delBtn) delBtn.addEventListener('click', e => { e.stopPropagation(); removePiece(i); });
       list.appendChild(item);
     });
   }
 
   async function removePiece(i) {
     const piece = pieces[i];
+    if (piece.preset) return;
     // Revoke blob URLs to free memory
     URL.revokeObjectURL(piece.imageURL);
     URL.revokeObjectURL(piece.audioURL);

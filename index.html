@@ -460,9 +460,9 @@
   .bookshelf:first-child{margin-top:1rem}
   .bookshelf-year{
     font-family:'Playfair Display','Cormorant Garamond',serif;
-    font-size:clamp(.7rem,1.8vw,1rem);font-weight:400;font-style:italic;
-    color:rgba(196,168,140,.45);letter-spacing:.15em;
-    padding:0 1.8rem .4rem;
+    font-size:clamp(.55rem,1.2vw,.72rem);font-weight:400;font-style:italic;
+    color:rgba(196,168,140,.35);letter-spacing:.15em;
+    padding:0 1.8rem .2rem;
   }
   .bookshelf-row{
     display:flex;align-items:flex-end;
@@ -1208,50 +1208,27 @@
         buildShelf(chunk, s === 0);
       }
     } else {
-      // Default: group by year/month, sorted chronologically
-      const monthMap = new Map();
-      pieces.forEach((p, i) => {
-        if (!p.date) {
-          const key = 'Other';
-          if (!monthMap.has(key)) monthMap.set(key, []);
-          monthMap.get(key).push({ idx: i, date: '' });
-          return;
-        }
-        const [y, m] = p.date.split('/');
-        const key = `${y}/${m}`;
-        if (!monthMap.has(key)) monthMap.set(key, []);
-        monthMap.get(key).push({ idx: i, date: p.date });
+      // Default: sort by date chronologically, pack tightly into shelves
+      const sorted = pieces.map((p, i) => ({ idx: i, date: p.date || '' }));
+      sorted.sort((a, b) => {
+        const da = a.date ? new Date(a.date.replace(/\//g, '-')) : new Date(0);
+        const db = b.date ? new Date(b.date.replace(/\//g, '-')) : new Date(0);
+        return da - db;
       });
-      // Sort month keys chronologically
-      const sortedKeys = [...monthMap.keys()].sort((a, b) => {
-        if (a === 'Other') return 1;
-        if (b === 'Other') return -1;
-        const [ay, am] = a.split('/').map(Number);
-        const [by, bm] = b.split('/').map(Number);
-        return ay !== by ? ay - by : am - bm;
-      });
-      // Sort pieces within each month by day
+      const allIndices = sorted.map(s => s.idx);
       let isFirst = true;
-      sortedKeys.forEach(key => {
-        const items = monthMap.get(key);
-        items.sort((a, b) => {
-          const da = a.date ? new Date(a.date.replace(/\//g, '-')) : new Date(0);
-          const db = b.date ? new Date(b.date.replace(/\//g, '-')) : new Date(0);
-          return da - db;
-        });
-        const indices = items.map(it => it.idx);
-        // Format label: "2024 / 12" style
-        let label = key;
-        if (key !== 'Other') {
-          const [y, m] = key.split('/');
+      for (let s = 0; s < allIndices.length; s += perShelf) {
+        const chunk = allIndices.slice(s, s + perShelf);
+        // Use the first piece's date for the shelf label
+        const firstP = pieces[chunk[0]];
+        let label = null;
+        if (firstP.date) {
+          const [y, m] = firstP.date.split('/');
           label = `${y} . ${parseInt(m)}`;
         }
-        for (let s = 0; s < indices.length; s += perShelf) {
-          const chunk = indices.slice(s, s + perShelf);
-          buildShelf(chunk, isFirst, s === 0 ? label : null);
-          isFirst = false;
-        }
-      });
+        buildShelf(chunk, isFirst, label);
+        isFirst = false;
+      }
     }
     highlightAlbumPlaying();
 

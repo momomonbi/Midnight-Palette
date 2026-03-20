@@ -276,6 +276,28 @@
     margin-top:.35rem;text-transform:uppercase;
   }
 
+  /* Museum Message */
+  .museum-message{
+    margin-top:1.2rem;text-align:center;
+    display:flex;align-items:center;justify-content:center;gap:.8rem;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .8s ease .3s, transform .8s ease .3s;
+  }
+  .museum-room.visible .museum-message{opacity:1;transform:translateY(0)}
+  .museum-message .msg-text{
+    font-size:clamp(.7rem, 1.5vw, .85rem);
+    font-style:italic;letter-spacing:.12em;line-height:1.6;
+    color:rgba(255,255,255,.35);
+    font-family:'Cormorant Garamond','Noto Sans JP',serif;
+  }
+  .museum-message .msg-deco-left::before,
+  .museum-message .msg-deco-right::before{
+    font-size:.6rem;color:rgba(138,122,98,.25);
+    letter-spacing:.15em;
+  }
+  .museum-message .msg-deco-left::before{ content:'\2014\2002'; }
+  .museum-message .msg-deco-right::before{ content:'\2002\2014'; }
+
   /* Floor reflection */
   .museum-reflection{
     margin-top:2rem;
@@ -510,8 +532,8 @@
     <input type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.aac,audio/mpeg,audio/mp4,audio/wav,audio/ogg,audio/aac" id="inp-audio">
     <div class="file-name" id="fname-audio"></div>
   </div>
-  <label>Secret Message</label>
-  <textarea id="inp-secret" placeholder="ふたりだけの秘密のメッセージ…"></textarea>
+  <label>Message</label>
+  <input type="text" id="inp-secret" placeholder="額縁の下に表示される短いメッセージ">
   <button class="add-btn" id="btn-add" disabled>Add to Gallery</button>
   <div class="piece-list" id="piece-list">
     <h3 style="margin-top:1.5rem">Pieces</h3>
@@ -618,32 +640,32 @@
 
   /* ── Presets ── */
   const PRESETS = [
-    { title: '星屑ノイジーデイズ', image: 'file/星屑ノイジーデイズ/sample1.webp', audio: 'file/星屑ノイジーデイズ/仮8.mp3' },
-    { title: '星屑ノイジーデイズ Piano', image: 'file/星屑ノイジーデイズ Piano/sample3.webp', audio: 'file/星屑ノイジーデイズ Piano/星屑ピアノ.mp3' },
-    { title: 'Day1', image: 'file/Day1/day1(5).webp', audio: 'file/Day1/day1デモ4.mp3' },
-    { title: 'Day1 Piano', image: 'file/Day1 Piano/day1(4).webp', audio: 'file/Day1 Piano/day1 piano.mp3' },
-    { title: 'time escape', image: 'file/time escape/1.webp', audio: 'file/time escape/Time Escape.mp3' },
-    { title: 'アイスは飲み物', image: 'file/アイスは飲み物/86.webp', audio: 'file/アイスは飲み物/アイスは飲み物.mp3' },
-    { title: 'アイスは飲み物ピアノ', image: 'file/アイスは飲み物ピアノ/86.webp', audio: 'file/アイスは飲み物ピアノ/アイスは飲み物ピアノ.mp3' },
-    { title: 'クジラの亡霊', image: 'file/クジラの亡霊/イラスト82.webp', audio: 'file/クジラの亡霊/くじらの亡霊.mp3' },
-    { title: 'サンフラワースピンナー', image: 'file/サンフラワースピンナー/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー/サンフラワースピンナ.mp3' },
-    { title: 'サンフラワースピンナー Piano', image: 'file/サンフラワースピンナー Piano/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー Piano/サンフラワースピンナーピアノソロ.mp3' },
-    { title: '不完全な祈り', image: 'file/不完全な祈り/8.webp', audio: 'file/不完全な祈り/不完全な祈り.mp3' },
-    { title: '光ト闇ノDiscord', image: 'file/光ト闇ノDiscord/2.webp', audio: 'file/光ト闇ノDiscord/光ト闇ノDiscord.mp3' },
-    { title: '光ト闇ノ静寂ニ咲ク', image: 'file/光ト闇ノ静寂ニ咲ク/103.webp', audio: 'file/光ト闇ノ静寂ニ咲ク/光ト闇ノ静寂ニ咲ク2.mp3' },
-    { title: '剣に刻む絶望交響曲', image: 'file/剣に刻む絶望交響曲/イラスト99 6.webp', audio: 'file/剣に刻む絶望交響曲/剣に刻む piano.mp3' },
-    { title: '心地よい場所', image: 'file/心地よい場所/イラスト99.webp', audio: 'file/心地よい場所/心地よい場所.mp3' },
-    { title: '心地よい場所 Piano', image: 'file/心地よい場所 Piano/イラスト99 2.webp', audio: 'file/心地よい場所 Piano/心地よい場所 piano.mp3' },
-    { title: '恋焦がれ', image: 'file/恋焦がれ/10.webp', audio: 'file/恋焦がれ/恋焦がれて想いは永遠に.mp3' },
-    { title: '星降る奇跡', image: 'file/星降る奇跡/DJI_20251116131605_0101_D.webp', audio: 'file/星降る奇跡/30-星降る軌跡.mp3' },
-    { title: '秘密のパレット', image: 'file/秘密のパレット/イラスト91 3-2.webp', audio: 'file/秘密のパレット/秘密のパレット.mp3' },
-    { title: '秘密のパレット Piano', image: 'file/秘密のパレット Piano/愛は毒薬　差分⑤.webp', audio: 'file/秘密のパレット Piano/秘密のパレット piano.mp3' },
-    { title: '酒は水は合言葉', image: 'file/酒は水は合言葉/3d018ef544e94f26.webp', audio: 'file/酒は水は合言葉/酒は水は合言葉.mp3' },
-    { title: '酒は水は合言葉 Piano', image: 'file/酒は水は合言葉 Piano/88.webp', audio: 'file/酒は水は合言葉 Piano/酒は水は合言葉ピアノソロ.mp3' },
+    { title: '星屑ノイジーデイズ', image: 'file/星屑ノイジーデイズ/sample1.webp', audio: 'file/星屑ノイジーデイズ/仮8.mp3', message: '星屑と甘い声が混ざり合う夜' },
+    { title: '星屑ノイジーデイズ Piano', image: 'file/星屑ノイジーデイズ Piano/sample3.webp', audio: 'file/星屑ノイジーデイズ Piano/星屑ピアノ.mp3', message: '揺るがない輪郭、柔らかな旋律' },
+    { title: 'Day1', image: 'file/Day1/day1(5).webp', audio: 'file/Day1/day1デモ4.mp3', message: '会いたいのに、さよならがつらい' },
+    { title: 'Day1 Piano', image: 'file/Day1 Piano/day1(4).webp', audio: 'file/Day1 Piano/day1 piano.mp3', message: 'それでも… 愛して、愛させて' },
+    { title: 'time escape', image: 'file/time escape/1.webp', audio: 'file/time escape/Time Escape.mp3', message: '時の檻を抜け出す鼓動' },
+    { title: 'アイスは飲み物', image: 'file/アイスは飲み物/86.webp', audio: 'file/アイスは飲み物/アイスは飲み物.mp3', message: '溶けていく甘さの向こう側' },
+    { title: 'アイスは飲み物ピアノ', image: 'file/アイスは飲み物ピアノ/86.webp', audio: 'file/アイスは飲み物ピアノ/アイスは飲み物ピアノ.mp3', message: '甘い記憶、ゆっくり溶けて' },
+    { title: 'クジラの亡霊', image: 'file/クジラの亡霊/イラスト82.webp', audio: 'file/クジラの亡霊/くじらの亡霊.mp3', message: '長い影は水底を漂う亡霊' },
+    { title: 'サンフラワースピンナー', image: 'file/サンフラワースピンナー/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー/サンフラワースピンナ.mp3', message: '眩暈パノラマ、もっと高く踊れ' },
+    { title: 'サンフラワースピンナー Piano', image: 'file/サンフラワースピンナー Piano/プレゼンテーション3.webp', audio: 'file/サンフラワースピンナー Piano/サンフラワースピンナーピアノソロ.mp3', message: 'ピアノの雨粒、花びらと踊れ' },
+    { title: '不完全な祈り', image: 'file/不完全な祈り/8.webp', audio: 'file/不完全な祈り/不完全な祈り.mp3', message: '完全じゃないから、私は祈る' },
+    { title: '光ト闇ノDiscord', image: 'file/光ト闇ノDiscord/2.webp', audio: 'file/光ト闇ノDiscord/光ト闇ノDiscord.mp3', message: '心の夜明けは、闇を抱くとき' },
+    { title: '光ト闇ノ静寂ニ咲ク', image: 'file/光ト闇ノ静寂ニ咲ク/103.webp', audio: 'file/光ト闇ノ静寂ニ咲ク/光ト闇ノ静寂ニ咲ク2.mp3', message: '静寂から生まれる、ひそやかな共鳴' },
+    { title: '剣に刻む絶望交響曲', image: 'file/剣に刻む絶望交響曲/イラスト99 6.webp', audio: 'file/剣に刻む絶望交響曲/剣に刻む piano.mp3', message: '闇こそ帰る場所' },
+    { title: '心地よい場所', image: 'file/心地よい場所/イラスト99.webp', audio: 'file/心地よい場所/心地よい場所.mp3', message: '触れそうで触れられない距離が愛しい' },
+    { title: '心地よい場所 Piano', image: 'file/心地よい場所 Piano/イラスト99 2.webp', audio: 'file/心地よい場所 Piano/心地よい場所 piano.mp3', message: 'この心地よい距離を信じていたい' },
+    { title: '恋焦がれ', image: 'file/恋焦がれ/10.webp', audio: 'file/恋焦がれ/恋焦がれて想いは永遠に.mp3', message: '青春の中で、ただひたすら見つめていた' },
+    { title: '星降る奇跡', image: 'file/星降る奇跡/DJI_20251116131605_0101_D.webp', audio: 'file/星降る奇跡/30-星降る軌跡.mp3', message: '偶然じゃない、不思議なほどの必然' },
+    { title: '秘密のパレット', image: 'file/秘密のパレット/イラスト91 3-2.webp', audio: 'file/秘密のパレット/秘密のパレット.mp3', message: '闇夜に咲く、一輪の心臓' },
+    { title: '秘密のパレット Piano', image: 'file/秘密のパレット Piano/愛は毒薬　差分⑤.webp', audio: 'file/秘密のパレット Piano/秘密のパレット piano.mp3', message: '囁く声、秘密の前奏曲' },
+    { title: '酒は水は合言葉', image: 'file/酒は水は合言葉/3d018ef544e94f26.webp', audio: 'file/酒は水は合言葉/酒は水は合言葉.mp3', message: 'ふわり酔いしれた先のカワイイ' },
+    { title: '酒は水は合言葉 Piano', image: 'file/酒は水は合言葉 Piano/88.webp', audio: 'file/酒は水は合言葉 Piano/酒は水は合言葉ピアノソロ.mp3', message: '甘く揺れるレゾナンス' },
   ];
 
   /* ── State ── */
-  let pieces = [];      // runtime: { id, title, imageURL, audioURL, colors, secret, preset? }
+  let pieces = [];      // runtime: { id, title, imageURL, audioURL, colors, message, preset? }
   let currentIndex = -1;
   let isPlaying = false;
   let viewMode = 'museum';
@@ -761,7 +783,7 @@
     const colors = await extractColors(imageURL);
     const id = Date.now();
     const title = inpTitle.value.trim();
-    const secret = inpSecret.value.trim();
+    const message = inpSecret.value.trim();
 
     // Save Blobs to IndexedDB
     await dbPut({
@@ -770,11 +792,11 @@
       imageBlob: selectedImageFile,
       audioBlob: selectedAudioFile,
       colors,
-      secret
+      message
     });
 
     // Add to runtime
-    pieces.push({ id, title, imageURL, audioURL, colors, secret });
+    pieces.push({ id, title, imageURL, audioURL, colors, message });
     renderMuseum(); renderAlbum(); renderPieceList();
 
     // Reset form
@@ -801,6 +823,7 @@
         audioURL: pr.audio,
         colors,
         secret: '',
+        message: pr.message || '',
         preset: true
       });
     }
@@ -816,7 +839,7 @@
         imageURL,
         audioURL,
         colors: rec.colors,
-        secret: rec.secret || ''
+        message: rec.message || rec.secret || ''
       });
     }
     renderMuseum(); renderAlbum(); renderPieceList();
@@ -861,13 +884,6 @@
       glow.className = 'art-glow';
       frame.appendChild(glow);
 
-      if (p.secret) {
-        const trigger = document.createElement('div');
-        trigger.className = 'secret-trigger';
-        trigger.addEventListener('click', e => { e.stopPropagation(); showSecret(p.secret); });
-        frame.appendChild(trigger);
-      }
-
       room.appendChild(frame);
 
       const placard = document.createElement('div');
@@ -877,6 +893,13 @@
         <div class="placard-num">No. ${String(i + 1).padStart(2, '0')}</div>
       `;
       room.appendChild(placard);
+
+      if (p.message) {
+        const msgEl = document.createElement('div');
+        msgEl.className = 'museum-message';
+        msgEl.innerHTML = `<span class="msg-deco-left"></span><span class="msg-text">${escHTML(p.message)}</span><span class="msg-deco-right"></span>`;
+        room.appendChild(msgEl);
+      }
 
       const refl = document.createElement('div');
       refl.className = 'museum-reflection';
@@ -906,13 +929,6 @@
         </div>
       `;
 
-      if (p.secret) {
-        const trigger = document.createElement('div');
-        trigger.className = 'secret-trigger';
-        trigger.addEventListener('click', e => { e.stopPropagation(); showSecret(p.secret); });
-        page.appendChild(trigger);
-      }
-
       page.addEventListener('click', () => playPiece(i));
       albumGrid.appendChild(page);
     });
@@ -936,7 +952,7 @@
         <img class="thumb" src="${p.imageURL}" alt="">
         <div class="info">
           <span class="title">${escHTML(p.title)}</span>
-          <span class="sub">${p.secret ? '&hearts; secret' : ''}</span>
+          <span class="sub">${p.message ? p.message : ''}</span>
         </div>
         ${p.preset ? '' : `<div class="del" data-i="${i}">&times;</div>`}
       `;

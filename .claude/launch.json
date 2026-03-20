@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "midnight-palette",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8080", "-d", "J:\\Dropbox\\学習\\Midnight Palette"],
+      "port": 8080
+    }
+  ]
+}

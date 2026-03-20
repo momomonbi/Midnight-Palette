@@ -185,49 +185,83 @@
 
   /* The Frame */
   .museum-frame{
+    --fw: clamp(22px, 4.5vw, 44px); /* total frame width */
     position:relative;
-    padding:6px;
-    background:linear-gradient(145deg, #3a3228, #26211b, #3a3228);
+    padding:var(--fw);
     border-radius:2px;
+    /* Multi-layer gold frame */
+    background:
+      /* Outer bevel highlight */
+      linear-gradient(180deg, #d4b06a 0%, #a8842e 3%, #c9a44e 6%,
+      /* Outer carved molding band */
+      #8b6914 8%, #705610 9%, #a88628 11%, #c9a84e 13%, #d4b86a 14%,
+      #c4a44a 16%, #8b6914 18%, #6b4e0e 19%, #9b7620 21%, #c9a84e 23%,
+      #d4b86a 24%, #c4a44a 26%, #8b6914 28%, #6b4e0e 29%, #9b7620 31%,
+      #c9a84e 33%, #d4b86a 34%,
+      /* Beaded detail row */
+      #705610 36%, #d4bc6e 37%, #f0d888 38%, #d4bc6e 39%, #705610 40%,
+      /* Inner smooth slope */
+      #c4a44a 42%, #b8943a 50%, #a88428 58%, #9b7620 65%,
+      /* Inner lip/groove */
+      #705610 80%, #584008 85%, #3d2c06 90%,
+      /* Innermost dark edge */
+      #2a1e04 95%, #1a1202 100%);
     box-shadow:
-      0 4px 30px rgba(0,0,0,.6),
+      0 6px 35px rgba(0,0,0,.6),
       0 0 80px rgba(0,0,0,.3),
-      inset 0 1px 0 rgba(255,255,255,.06),
-      inset 0 -1px 0 rgba(0,0,0,.4);
+      inset 0 1px 0 rgba(255,220,120,.3),
+      inset 0 -1px 0 rgba(0,0,0,.5),
+      inset 1px 0 0 rgba(255,220,120,.15),
+      inset -1px 0 0 rgba(255,220,120,.15);
     transition:transform .6s cubic-bezier(.25,.46,.45,.94), box-shadow .6s;
   }
-  /* Inner frame bevel */
+  /* Side frame gradients (left/right matching) */
   .museum-frame::before{
-    content:'';position:absolute;inset:3px;
-    border:1px solid rgba(138,122,98,.25);
-    border-radius:1px;pointer-events:none;
+    content:'';position:absolute;inset:0;border-radius:2px;pointer-events:none;
+    background:
+      linear-gradient(90deg,
+        rgba(212,176,106,.9) 0%, rgba(168,132,46,.85) 3%, rgba(201,168,78,.8) 6%,
+        rgba(139,105,20,.7) 8%, rgba(201,168,78,.5) 15%,
+        transparent 35%, transparent 65%,
+        rgba(201,168,78,.5) 85%, rgba(139,105,20,.7) 92%,
+        rgba(201,168,78,.8) 94%, rgba(168,132,46,.85) 97%, rgba(212,176,106,.9) 100%
+      );
   }
-  /* Gold accent line */
+  /* Corner highlights + carved leaf texture overlay */
   .museum-frame::after{
-    content:'';position:absolute;inset:1px;
-    border:1px solid rgba(180,160,120,.08);
-    pointer-events:none;
+    content:'';position:absolute;inset:0;border-radius:2px;pointer-events:none;
+    background:
+      /* Corner accent glints */
+      radial-gradient(ellipse at 0% 0%, rgba(255,230,150,.25) 0%, transparent 18%),
+      radial-gradient(ellipse at 100% 0%, rgba(255,230,150,.2) 0%, transparent 18%),
+      radial-gradient(ellipse at 0% 100%, rgba(255,230,150,.15) 0%, transparent 18%),
+      radial-gradient(ellipse at 100% 100%, rgba(255,230,150,.18) 0%, transparent 18%),
+      /* Subtle carved grain texture */
+      repeating-linear-gradient(135deg,
+        transparent 0px, rgba(255,230,140,.04) 1px,
+        transparent 2px, rgba(60,45,10,.05) 3px, transparent 4px
+      );
   }
   .museum-frame:hover{
     transform:scale(1.005);
     box-shadow:
-      0 8px 50px rgba(0,0,0,.7),
+      0 10px 50px rgba(0,0,0,.7),
       0 0 120px rgba(0,0,0,.4),
-      inset 0 1px 0 rgba(255,255,255,.08);
+      inset 0 1px 0 rgba(255,220,120,.35),
+      inset 0 -1px 0 rgba(0,0,0,.5);
   }
   /* Mat / Passepartout */
   .museum-mat{
     padding:clamp(16px, 3vw, 40px);
     background:linear-gradient(135deg, #ede9e1, #e4dfd6, #eae6dd);
     position:relative;
+    box-shadow:inset 0 0 2px rgba(0,0,0,.15);
   }
-  /* Mat inner shadow for depth */
   .museum-mat::before{
     content:'';position:absolute;inset:0;
     box-shadow:inset 0 0 15px rgba(0,0,0,.08), inset 0 0 3px rgba(0,0,0,.04);
     pointer-events:none;
   }
-  /* Mat bevel cut effect */
   .museum-mat::after{
     content:'';position:absolute;
     inset:clamp(14px, 2.8vw, 38px);
@@ -241,17 +275,11 @@
     object-fit:contain;position:relative;z-index:1;
   }
 
-  /* Artwork spotlight glow on the painting itself */
+  /* Artwork spotlight glow */
   .museum-frame .art-glow{
     position:absolute;inset:0;
     background:radial-gradient(ellipse at 50% 30%, rgba(255,250,235,.06), transparent 60%);
     pointer-events:none;z-index:2;mix-blend-mode:soft-light;
-  }
-
-  /* Secret trigger in museum view */
-  .museum-frame .secret-trigger{
-    position:absolute;bottom:10px;right:10px;width:36px;height:36px;
-    cursor:pointer;border-radius:50%;z-index:5;
   }
 
   /* Placard / Title plate */

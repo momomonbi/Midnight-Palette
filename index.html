@@ -394,12 +394,14 @@
   #album-scroll{
     display:none;
     min-height:100vh;
-    padding:5rem 1.5rem 8rem;
+    padding:6rem 1.5rem 8rem;
+    padding-top:calc(4rem + env(safe-area-inset-top, 0px));
   }
   #album-scroll.active{display:block}
 
   /* ─── Bookshelf ─── */
   .bookshelf{max-width:900px;margin:0 auto 3rem}
+  .bookshelf:first-child{margin-top:1rem}
   .bookshelf-row{
     display:flex;align-items:flex-end;
     padding:0 1.5rem;min-height:clamp(200px, 35vw, 320px);

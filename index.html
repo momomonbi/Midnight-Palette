@@ -693,15 +693,17 @@
     color:var(--fg);letter-spacing:.08em;
   }
 
-  /* Playing indicator — lift up + brighten */
+  /* Playing indicator — subtle glow, no lift */
   .book-spine.playing{
-    transform:translateY(-10px);
     z-index:10;
     box-shadow:
-      0 10px 28px rgba(123,107,165,.25),
-      0 5px 10px rgba(0,0,0,.45),
-      2px 2px 4px rgba(0,0,0,.35),
-      0 0 20px rgba(196,120,141,.12);
+      0 4px 6px rgba(0,0,0,.4),
+      2px 0 3px rgba(0,0,0,.2),
+      -1px 0 2px rgba(0,0,0,.15),
+      1px 2px 4px rgba(0,0,0,.35),
+      0 1px 1px rgba(0,0,0,.5),
+      0 0 18px rgba(196,120,141,.18),
+      0 0 36px rgba(123,107,165,.1);
   }
   .book-spine.playing .spine-bg img{
     filter:brightness(.85) contrast(1.1) saturate(.95);

@@ -477,7 +477,12 @@
   #album-scroll.active{display:block}
 
   /* ─── Bookshelf ─── */
-  .bookshelf{max-width:900px;margin:0 auto 3rem}
+  /* ═══ Realistic Wooden Bookshelf — Furniture Grade ═══ */
+  .bookshelf{
+    max-width:900px;margin:0 auto 2.5rem;
+    transform:translateZ(0);will-change:transform;
+    filter:drop-shadow(0 60px 120px rgba(0,0,0,.45));
+  }
   .bookshelf:first-child{margin-top:1rem}
   .bookshelf-year{
     font-family:'Playfair Display','Cormorant Garamond',serif;
@@ -485,112 +490,152 @@
     color:rgba(196,168,140,.35);letter-spacing:.15em;
     padding:0 1.8rem .2rem;
   }
+
+  /* ── Back panel: darkened recessed wall ── */
   .bookshelf-row{
     display:flex;align-items:flex-end;
-    padding:0 1.5rem;min-height:clamp(200px, 35vw, 320px);
+    padding:0 1.2rem;min-height:clamp(200px, 35vw, 320px);
     position:relative;
-    /* Back wall shadow behind books */
+    /* Recessed back panel — darker than shelf to show depth */
     background:
-      linear-gradient(180deg, rgba(0,0,0,.12) 0%, transparent 30%, transparent 85%, rgba(0,0,0,.08) 100%);
-  }
-  .bookshelf-ledge{
-    width:100%;height:18px;
-    background:linear-gradient(180deg, #5a3e1e 0%, #7a5a30 30%, #4a3018 70%, #3a2210 100%);
-    border-radius:0 0 3px 3px;
-    box-shadow:0 4px 16px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.05);
-    position:relative;
-  }
-  .bookshelf-ledge::before{
-    content:'';position:absolute;top:-3px;left:0;right:0;height:3px;
-    background:linear-gradient(180deg, #8a6a3e, #6a4e28);
-    border-radius:2px 2px 0 0;
-  }
-  .bookshelf-ledge::after{
-    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-    background:repeating-linear-gradient(90deg,
-      transparent 0px, rgba(0,0,0,.03) 40px, transparent 80px);
+      /* Back panel wood grain */
+      repeating-linear-gradient(90deg,
+        #3a2415 0px, #3d2618 15px, #382214 25px, #402818 40px,
+        #3a2415 55px, #362012 70px, #3e2717 85px
+      ),
+      /* Darkening overlay — pushed back */
+      linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,.06) 40%, rgba(0,0,0,.08) 85%, rgba(0,0,0,.2) 100%),
+      #3a2415;
+    background-size:350px 100%, 100% 100%, 100% 100%;
+    /* Shelf-to-back contact shadow — critical for depth */
+    box-shadow:
+      inset 0 -10px 16px rgba(0,0,0,.4),
+      inset 0 8px 14px rgba(0,0,0,.3),
+      inset 6px 0 10px rgba(0,0,0,.15),
+      inset -6px 0 10px rgba(0,0,0,.15);
   }
 
+  /* ── Shelf ledge: thick wooden plank with visible thickness ── */
+  .bookshelf-ledge{
+    width:100%;height:22px;
+    position:relative;
+    outline:1px solid rgba(0,0,0,.1);
+    /* Wood grain — horizontal board */
+    background:
+      repeating-linear-gradient(90deg,
+        #6b4428 0px, #6e4729 18px, #684226 30px, #724c2e 50px,
+        #6b4428 65px, #654025 80px, #6f4a2c 100px
+      ),
+      /* Top surface lighter, bottom darker — thickness illusion */
+      linear-gradient(180deg, #8a5a38 0%, #7a5235 15%, #6b4428 50%, #4a3019 85%, #3a2415 100%);
+    background-size:300px 100%, 100% 100%;
+    /* Plank depth: top bright, bottom heavy dark */
+    box-shadow:
+      /* Top surface catches light */
+      inset 0 2px 3px rgba(255,255,255,.12),
+      inset 0 1px 0 rgba(255,255,255,.08),
+      /* Front face shadow */
+      inset 0 -3px 5px rgba(0,0,0,.35),
+      /* Bottom heavy shadow — weight */
+      0 6px 18px rgba(0,0,0,.55),
+      0 2px 6px rgba(0,0,0,.65),
+      0 1px 2px rgba(0,0,0,.7);
+  }
+  /* Shelf lip — top edge raised rim */
+  .bookshelf-ledge::before{
+    content:'';position:absolute;top:-4px;left:0;right:0;height:4px;
+    background:linear-gradient(180deg, #8a6a3e 0%, #7a5a30 40%, #6b4428 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.1),
+      inset 0 -1px 2px rgba(0,0,0,.3);
+  }
+  /* Shelf wood grain texture overlay */
+  .bookshelf-ledge::after{
+    content:'';position:absolute;inset:0;
+    background:repeating-linear-gradient(90deg,
+      transparent 0px, rgba(0,0,0,.02) 30px, rgba(255,255,255,.01) 50px, transparent 80px);
+  }
+
+  /* ═══ Book Spines — Realistic with contact shadows ═══ */
   .book-spine{
     position:relative;flex-shrink:0;
     width:clamp(42px, 5.5vw, 58px);
     height:clamp(190px, 33vw, 300px);
-    cursor:pointer;border-radius:3px 3px 1px 1px;
+    cursor:pointer;
     transition:transform .3s cubic-bezier(.25,.46,.45,.94), box-shadow .3s, margin .3s;
     overflow:visible;
-    /* Resting book shadow: contact shadow + side depth */
+    /* Contact shadow on shelf + side shadow from neighbors */
     box-shadow:
-      1px 2px 3px rgba(0,0,0,.4),
-      -1px 1px 2px rgba(0,0,0,.25),
+      0 4px 6px rgba(0,0,0,.4),
+      2px 0 3px rgba(0,0,0,.2),
+      -1px 0 2px rgba(0,0,0,.15),
+      1px 2px 4px rgba(0,0,0,.35),
       0 1px 1px rgba(0,0,0,.5);
+    outline:1px solid rgba(0,0,0,.08);
   }
   .book-spine:hover{
     transform:translateY(-16px) scale(1.03);
     z-index:20;
     box-shadow:
-      0 12px 35px rgba(0,0,0,.6),
-      0 4px 10px rgba(0,0,0,.5),
-      2px 2px 4px rgba(0,0,0,.3);
+      0 16px 40px rgba(0,0,0,.6),
+      0 6px 14px rgba(0,0,0,.5),
+      3px 3px 6px rgba(0,0,0,.3);
     margin:0 2px;
   }
   .book-spine .spine-bg{
-    position:absolute;inset:0;overflow:hidden;border-radius:3px 3px 1px 1px;
+    position:absolute;inset:0;overflow:hidden;
   }
   .book-spine .spine-bg img{
     width:100%;height:100%;object-fit:cover;
-    filter:brightness(.65) contrast(1.15) saturate(.85);
+    filter:brightness(.62) contrast(1.15) saturate(.85);
   }
+  /* Spine curvature + depth shading */
   .book-spine .spine-overlay{
-    position:absolute;inset:0;border-radius:3px 3px 1px 1px;
+    position:absolute;inset:0;
     background:
-      /* Top edge: light catching the top of the book */
+      /* Top: catches light */
       linear-gradient(180deg,
-        rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 1.5%,
-        transparent 3%,
-        transparent 96%,
-        rgba(0,0,0,.2) 100%),
-      /* Spine curvature: center highlight, dark edges */
+        rgba(255,255,255,.1) 0%, rgba(255,255,255,.03) 1.5%,
+        transparent 3%, transparent 95%,
+        rgba(0,0,0,.25) 100%),
+      /* Spine curve: center highlight, dark edges */
       linear-gradient(90deg,
-        rgba(0,0,0,.35) 0%,
-        rgba(0,0,0,.12) 8%,
-        rgba(255,255,255,.04) 20%,
-        rgba(255,255,255,.06) 45%,
-        rgba(255,255,255,.03) 55%,
-        rgba(0,0,0,.08) 80%,
-        rgba(0,0,0,.3) 95%,
-        rgba(0,0,0,.5) 100%);
+        rgba(0,0,0,.4) 0%,
+        rgba(0,0,0,.15) 6%,
+        rgba(255,255,255,.05) 18%,
+        rgba(255,255,255,.07) 42%,
+        rgba(255,255,255,.04) 58%,
+        rgba(0,0,0,.1) 78%,
+        rgba(0,0,0,.35) 94%,
+        rgba(0,0,0,.55) 100%);
     box-shadow:
-      /* Left edge highlight (light source) */
-      inset 2px 0 0 rgba(255,255,255,.07),
-      inset 3px 0 6px rgba(255,255,255,.03),
-      /* Right edge deep shadow (book depth) */
-      inset -2px 0 0 rgba(0,0,0,.35),
-      inset -4px 0 8px rgba(0,0,0,.15),
+      /* Left edge: light source highlight */
+      inset 2px 0 0 rgba(255,255,255,.08),
+      inset 3px 0 8px rgba(255,255,255,.03),
+      /* Right edge: deep shadow (book thickness) */
+      inset -2px 0 0 rgba(0,0,0,.4),
+      inset -5px 0 10px rgba(0,0,0,.18),
       /* Top bright edge */
-      inset 0 2px 0 rgba(255,255,255,.06),
-      inset 0 3px 4px rgba(255,255,255,.02),
+      inset 0 2px 0 rgba(255,255,255,.07),
       /* Bottom contact shadow */
-      inset 0 -2px 4px rgba(0,0,0,.25);
+      inset 0 -3px 6px rgba(0,0,0,.3);
   }
-  /* Page edges visible on the right side of spine */
+  /* Page edges: right side */
   .book-spine::before{
     content:'';position:absolute;
-    top:4px;bottom:3px;right:-2px;width:3px;
+    top:4px;bottom:3px;right:-3px;width:3px;
     background:
       repeating-linear-gradient(180deg,
-        #e8e4dc 0px, #d8d4cc 1px, #f0ece4 2px);
-    border-radius:0 1px 1px 0;
-    box-shadow:-1px 0 1px rgba(0,0,0,.15);
-    opacity:.6;
+        #e8e4dc 0px, #d4d0c8 1px, #f0ece4 2px);
+    box-shadow:-1px 0 2px rgba(0,0,0,.2), 1px 0 1px rgba(0,0,0,.1);
+    opacity:.55;
   }
-  /* Top page edge */
+  /* Page edges: top */
   .book-spine::after{
     content:'';position:absolute;
     top:-2px;left:4px;right:4px;height:2px;
-    background:linear-gradient(90deg,
-      #d0ccc4, #e8e4dc, #d4d0c8);
-    border-radius:1px 1px 0 0;
-    box-shadow:0 -1px 1px rgba(0,0,0,.1);
+    background:linear-gradient(90deg, #ccc8c0, #e8e4dc, #d0ccc4);
+    box-shadow:0 -1px 1px rgba(0,0,0,.12);
     opacity:.5;
   }
   .book-spine .spine-title{
@@ -609,12 +654,12 @@
     font-size:.4rem;letter-spacing:.15em;color:rgba(255,255,255,.25);
     z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
-  /* Decorative bands (embossed look) */
+  /* Embossed decorative bands */
   .book-spine .spine-band-top,
   .book-spine .spine-band-btm{
     position:absolute;left:4px;right:4px;height:1px;z-index:2;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
-    box-shadow:0 1px 0 rgba(0,0,0,.2);
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+    box-shadow:0 1px 0 rgba(0,0,0,.25);
   }
   .book-spine .spine-band-top{top:12%}
   .book-spine .spine-band-btm{bottom:12%}
@@ -646,17 +691,17 @@
   .book-spine.playing{
     transform:translateY(-10px);
     box-shadow:
-      0 8px 25px rgba(123,107,165,.2),
-      0 4px 8px rgba(0,0,0,.4),
-      1px 2px 3px rgba(0,0,0,.3);
+      0 10px 28px rgba(123,107,165,.2),
+      0 5px 10px rgba(0,0,0,.45),
+      2px 2px 4px rgba(0,0,0,.35);
   }
   .book-spine.playing:hover{
     transform:translateY(-16px) scale(1.03);
     z-index:20;
     box-shadow:
-      0 12px 35px rgba(0,0,0,.6),
-      0 4px 10px rgba(0,0,0,.5),
-      2px 2px 4px rgba(0,0,0,.3);
+      0 16px 40px rgba(0,0,0,.6),
+      0 6px 14px rgba(0,0,0,.5),
+      3px 3px 6px rgba(0,0,0,.3);
     margin:0 2px;
   }
 

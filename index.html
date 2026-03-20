@@ -9,7 +9,7 @@
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
   :root{
-    --bg:#000;--fg:rgba(255,255,255,.85);--fg-dim:rgba(255,255,255,.35);
+    --bg:#000;--fg:rgba(255,255,255,.92);--fg-dim:rgba(255,255,255,.5);
     --accent:#7b6ba5;--accent2:#c4788d;
     --wall:#0c0b0e;--wall-light:#131216;
     --frame-outer:#2a2320;--frame-inner:#3d3530;--frame-gold:#8a7a62;
@@ -30,13 +30,41 @@
   }
   #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
   #splash h1{
+    position:relative;overflow:hidden;
     font-size:clamp(2rem,6vw,4.5rem);font-weight:300;letter-spacing:.3em;
     background:linear-gradient(135deg,#7b6ba5,#c4788d,#e8b4b8);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     animation:fadeUp 2s ease both;
   }
+  #splash h1::before{
+    content:'';position:absolute;top:0;left:-100%;
+    width:60%;height:100%;
+    background:linear-gradient(105deg,
+      transparent 20%,
+      rgba(255,255,255,.08) 35%,
+      rgba(255,255,255,.35) 48%,
+      rgba(255,255,255,.5) 50%,
+      rgba(255,255,255,.35) 52%,
+      rgba(255,255,255,.08) 65%,
+      transparent 80%);
+    animation:shimmer 4s 3s ease-in-out infinite;
+    z-index:1;
+  }
+  @keyframes shimmer{
+    0%{left:-100%;opacity:0}
+    10%{opacity:1}
+    100%{left:200%;opacity:0}
+  }
+  #splash h1::after{
+    content:attr(data-text);position:absolute;inset:0;
+    font-size:inherit;font-weight:inherit;letter-spacing:inherit;font-family:inherit;
+    background:linear-gradient(135deg,#7b6ba5,#c4788d,#e8b4b8);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    filter:blur(18px);opacity:.45;z-index:-1;
+  }
   #splash p{
     margin-top:1.2rem;font-size:.85rem;color:var(--fg-dim);letter-spacing:.18em;
+    text-shadow:0 0 12px rgba(123,107,165,.3), 0 2px 6px rgba(0,0,0,.5);
     animation:fadeUp 2s .6s ease both;font-style:italic;
   }
   #splash .enter-btn{
@@ -44,16 +72,18 @@
     border:1px solid rgba(255,255,255,.15);border-radius:999px;
     background:transparent;color:var(--fg);font-family:inherit;font-size:.82rem;
     letter-spacing:.22em;cursor:pointer;animation:fadeUp 2s 1.2s ease both;
+    text-shadow:0 0 8px rgba(255,255,255,.15), 0 2px 4px rgba(0,0,0,.4);
     transition:border-color .4s,background .4s,letter-spacing .4s;
   }
   #splash .enter-btn:hover{border-color:var(--accent);background:rgba(123,107,165,.08);letter-spacing:.28em}
   #splash .credit{
     position:absolute;bottom:2.5rem;
-    font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.15em;
+    font-size:.75rem;color:rgba(255,255,255,.5);letter-spacing:.15em;
     animation:fadeUp 2s 1.8s ease both;
   }
   #splash .credit .artist{
     color:var(--accent2);font-size:.85rem;font-weight:400;letter-spacing:.08em;
+    text-shadow:0 0 10px rgba(196,120,141,.35), 0 2px 6px rgba(0,0,0,.4);
   }
   @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
@@ -159,7 +189,7 @@
   /* Room number */
   .museum-room .room-number{
     position:absolute;top:2.5rem;left:50%;transform:translateX(-50%);
-    font-size:.55rem;letter-spacing:.5em;color:rgba(255,255,255,.1);
+    font-size:.55rem;letter-spacing:.5em;color:rgba(255,255,255,.18);
     text-transform:uppercase;
   }
   /* Spotlight cone from ceiling */
@@ -371,9 +401,10 @@
   .museum-placard .placard-title{
     font-size:clamp(.85rem, 2vw, 1.15rem);
     font-weight:400;letter-spacing:.18em;color:var(--fg);
+    text-shadow:0 0 16px rgba(123,107,165,.25), 0 2px 8px rgba(0,0,0,.5);
   }
   .museum-placard .placard-num{
-    font-size:.55rem;letter-spacing:.4em;color:rgba(255,255,255,.2);
+    font-size:.55rem;letter-spacing:.4em;color:rgba(255,255,255,.35);
     margin-top:.35rem;text-transform:uppercase;
   }
 
@@ -388,12 +419,13 @@
   .museum-message .msg-text{
     font-size:clamp(.7rem, 1.5vw, .85rem);
     font-style:italic;letter-spacing:.12em;line-height:1.6;
-    color:rgba(255,255,255,.35);
+    color:rgba(255,255,255,.5);
+    text-shadow:0 0 14px rgba(196,120,141,.2), 0 2px 6px rgba(0,0,0,.4);
     font-family:'Cormorant Garamond','Noto Sans JP',serif;
   }
   .museum-message .msg-deco-left::before,
   .museum-message .msg-deco-right::before{
-    font-size:.6rem;color:rgba(138,122,98,.25);
+    font-size:.6rem;color:rgba(138,122,98,.4);
     letter-spacing:.15em;
   }
   .museum-message .msg-deco-left::before{ content:'\2014\2002'; }
@@ -409,33 +441,35 @@
   .museum-date .date-inner{
     display:inline-flex;align-items:baseline;gap:.1em;
     font-family:'Playfair Display','Cormorant Garamond',serif;
-    color:rgba(255,255,255,.22);
+    color:rgba(255,255,255,.35);
     letter-spacing:.02em;line-height:1;
   }
   .museum-date .date-year{
     font-size:clamp(.55rem,1.2vw,.7rem);font-weight:400;font-style:italic;
-    color:rgba(196,168,140,.55);letter-spacing:.08em;
+    color:rgba(196,168,140,.7);letter-spacing:.08em;
+    text-shadow:0 0 10px rgba(196,168,140,.25), 0 2px 6px rgba(0,0,0,.4);
     margin-right:.15em;
   }
   .museum-date .date-month{
     font-size:clamp(1.4rem,4vw,2.2rem);font-weight:600;
-    background:linear-gradient(180deg, rgba(196,168,140,.55), rgba(210,150,170,.45));
+    background:linear-gradient(180deg, rgba(196,168,140,.72), rgba(210,150,170,.6));
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     line-height:.85;
   }
   .museum-date .date-slash{
     font-size:clamp(.8rem,2vw,1.1rem);font-weight:300;
-    color:rgba(196,168,140,.35);margin:0 .05em;
+    color:rgba(196,168,140,.5);margin:0 .05em;
     font-style:italic;
+    text-shadow:0 0 8px rgba(196,168,140,.2), 0 2px 4px rgba(0,0,0,.3);
   }
   .museum-date .date-day{
     font-size:clamp(1.4rem,4vw,2.2rem);font-weight:600;
-    background:linear-gradient(180deg, rgba(196,168,140,.55), rgba(210,150,170,.45));
+    background:linear-gradient(180deg, rgba(196,168,140,.72), rgba(210,150,170,.6));
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     line-height:.85;
   }
   .museum-date .date-dot{
-    font-size:clamp(.5rem,1vw,.65rem);color:rgba(196,168,140,.4);
+    font-size:clamp(.5rem,1vw,.65rem);color:rgba(196,168,140,.55);
     margin:0 .1em;align-self:center;
   }
 
@@ -443,7 +477,8 @@
   .spine-preview .preview-date{
     font-family:'Playfair Display','Cormorant Garamond',serif;
     font-size:.7rem;font-style:italic;
-    color:rgba(220,200,180,.6);letter-spacing:.12em;
+    color:rgba(220,200,180,.75);letter-spacing:.12em;
+    text-shadow:0 0 8px rgba(220,200,180,.2), 0 1px 4px rgba(0,0,0,.4);
     text-align:center;padding-bottom:.3rem;margin-top:.1rem;
   }
 
@@ -489,7 +524,8 @@
   .bookshelf-year{
     font-family:'Playfair Display','Cormorant Garamond',serif;
     font-size:clamp(.55rem,1.2vw,.72rem);font-weight:400;font-style:italic;
-    color:rgba(220,195,165,.5);letter-spacing:.15em;
+    color:rgba(220,195,165,.65);letter-spacing:.15em;
+    text-shadow:0 0 10px rgba(220,195,165,.2), 0 2px 6px rgba(0,0,0,.5);
     padding:0 1.8rem .2rem;
   }
 
@@ -645,7 +681,7 @@
     writing-mode:vertical-rl;text-orientation:mixed;
     transform:translate(-50%,-50%);
     font-size:clamp(.55rem, 1.2vw, .72rem);
-    letter-spacing:.12em;color:rgba(255,255,255,.88);
+    letter-spacing:.12em;color:rgba(255,255,255,.95);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     max-height:80%;
     text-shadow:0 1px 4px rgba(0,0,0,.8), 0 0 8px rgba(0,0,0,.3);
@@ -653,7 +689,7 @@
   }
   .book-spine .spine-num{
     position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
-    font-size:.4rem;letter-spacing:.15em;color:rgba(255,255,255,.25);
+    font-size:.4rem;letter-spacing:.15em;color:rgba(255,255,255,.4);
     z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
   /* Embossed decorative bands */
@@ -693,6 +729,7 @@
   .book-spine .spine-preview .preview-title{
     font-size:.6rem;text-align:center;padding:.4rem 0 .1rem;
     color:var(--fg);letter-spacing:.08em;
+    text-shadow:0 0 8px rgba(123,107,165,.3), 0 1px 4px rgba(0,0,0,.5);
   }
 
   /* Playing indicator — subtle glow, no lift */
@@ -771,12 +808,12 @@
     animation:msgPop .8s ease both;
   }
   .secret-overlay .msg-deco{
-    margin-top:1rem;font-size:.7rem;color:rgba(255,255,255,.12);letter-spacing:.5em;
+    margin-top:1rem;font-size:.7rem;color:rgba(255,255,255,.22);letter-spacing:.5em;
   }
   @keyframes msgPop{from{opacity:0;transform:translateY(18px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
   @keyframes msgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
   .secret-overlay .close-hint{
-    position:absolute;bottom:2.5rem;font-size:.6rem;color:rgba(255,255,255,.15);letter-spacing:.2em;
+    position:absolute;bottom:2.5rem;font-size:.6rem;color:rgba(255,255,255,.28);letter-spacing:.2em;
   }
 
   /* ═══ Player Bar ═══ */
@@ -791,7 +828,7 @@
   #player-bar .now-thumb{width:36px;height:36px;border-radius:2px;object-fit:cover;
     box-shadow:0 2px 8px rgba(0,0,0,.4)}
   #player-bar .now-info{flex:1;min-width:0}
-  #player-bar .now-info .now-title{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.05em}
+  #player-bar .now-info .now-title{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.05em;text-shadow:0 0 10px rgba(196,120,141,.2), 0 1px 4px rgba(0,0,0,.4)}
   #player-bar .now-info .now-sub{font-size:.58rem;color:var(--fg-dim);letter-spacing:.08em}
   .play-btn,.prev-btn,.next-btn{
     width:32px;height:32px;border-radius:50%;
@@ -861,7 +898,7 @@
 
 <!-- Splash -->
 <div id="splash">
-  <h1>Midnight Palette</h1>
+  <h1 data-text="Midnight Palette">Midnight Palette</h1>
   <p>where sound meets color</p>
   <button class="enter-btn" id="enter-btn">Enter the Gallery</button>
   <span class="credit">Illustration by <span class="artist">りぴ</span></span>
